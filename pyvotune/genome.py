@@ -13,10 +13,11 @@ from pyvotune.assembly_state import AssemblyState
 
 from pyvotune.pyvotune_globals import NOOP_GENE
 
+log = logger()
+
 
 class Genome:
     def __init__(self, genome_id):
-        self.log = logger()
         self.genome_id = genome_id
         self.param_vals = []
         self.genes = []
@@ -24,7 +25,7 @@ class Genome:
 
         self.assembled = None
 
-        self.log.debug(
+        log.debug(
             u"G{0}: Instantiated new genome".format(self.genome_id))
 
     def add_gene(self, param_vals, gene):
@@ -36,7 +37,7 @@ class Genome:
 
         self.state.gene_update(gene)
 
-        self.log.debug(
+        log.debug(
             u"G{0}: Added new gene {1}".format(self.genome_id, gene))
 
     def does_gene_fit(self, gene):
@@ -54,7 +55,7 @@ class Genome:
         try:
             return self._assemble(assemble=False)
         except:
-            self.log.exception(
+            log.exception(
                 u"G{0}: Assembly hard excepted, failing".format(
                     self.genome_id))
             return False
@@ -67,7 +68,7 @@ class Genome:
         try:
             return self._assemble()
         except:
-            self.log.exception(
+            log.exception(
                 u"G{0}: Assembly hard excepted, failing".format(
                     self.genome_id))
             return False
@@ -91,7 +92,7 @@ class Genome:
                 self.state["last"] = True
 
             if not self.does_gene_fit(gene):
-                self.log.debug(
+                log.debug(
                     u"G{0}: Invalid - Gene does not fit in current state {1} {2}".format(
                         self.genome_id, gene, self.state))
                 return False
@@ -100,7 +101,7 @@ class Genome:
             num_gene_params = len(gene_params)
 
             if num_gene_params > len(remaining_param_vals):
-                self.log.debug(
+                log.debug(
                     u"G{0}: Invalid - Not enough remaining parameters ({1} < {2})".format(
                         self.genome_id, num_gene_params, len(remaining_param_vals)))
 
@@ -111,7 +112,7 @@ class Genome:
 
             for i, (param, val) in enumerate(zip(gene_params, gene_param_vals)):
                 if not param.check(val):
-                    self.log.debug(
+                    log.debug(
                         u"G{0}: Invalid - Parameter {1} failed assembly".format(
                             self.genome_id, i))
 
@@ -124,7 +125,7 @@ class Genome:
             self.assembled = [
                 self.construct_gene(g, p) for g, p in to_assemble]
 
-            self.log.debug(
+            log.debug(
                 u"G{0}: Assembled successfully".format(self.genome_id))
         return True
 
@@ -137,7 +138,7 @@ class Genome:
                 'factory_fn' in gene._pyvotune_assembly_params:
             cons = gene._pyvotune_assembly_params['factory_fn']
 
-        self.log.debug(u"G{0}: Instantiating gene {1} with {2}".format(
+        log.debug(u"G{0}: Instantiating gene {1} with {2}".format(
             self.genome_id, gene, param_vals))
         return cons(*param_vals)
 

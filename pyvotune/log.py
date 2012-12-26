@@ -40,8 +40,9 @@ def create_logger():
             return Logger.getEffectiveLevel(x)
 
     class DebugHandler(StreamHandler):
-        def emit(x, record):
-            StreamHandler.emit(x, record) if global_debug else None
+        pass
+        #def emit(x, record):
+            #StreamHandler.emit(x, record) if global_debug else None
 
     class DebugFormatter(Formatter):
         def format(self, record):

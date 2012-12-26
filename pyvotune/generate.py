@@ -15,6 +15,8 @@ from pyvotune.util.id_generator import get_id
 
 import random
 
+log = logger()
+
 
 class Generate:
     def __init__(
@@ -26,10 +28,16 @@ class Generate:
         self.noop_frequency = noop_frequency
         self.rng = rng
         self.gene_pool = gene_pool
-        self.log = logger()
 
-    def generate(self):
-        return self._generate()
+    def generate(self, max_retries=25):
+        for i in range(max_retries):
+            genome = self._generate()
+
+            if genome:
+                return genome
+
+        log.error(u"Generate: Failed after {0} tries to generate a genome".format(
+            max_retries))
 
     def _generate(self):
         genome = Genome(get_id())
@@ -38,7 +46,7 @@ class Generate:
             gene = self.next_gene(genome)
 
             if not gene:
-                self.log.debug(u"Generate: Failed, ran out of valid genes")
+                log.debug(u"Generate: Failed, ran out of valid genes")
                 return
 
             params = self.get_gene_param_vals(gene)
@@ -47,20 +55,20 @@ class Generate:
         if genome.validate():
             return genome
 
-        self.log.debug(u"Generate: Failed, invalid genome generated")
+        log.debug(u"Generate: Failed, invalid genome generated")
 
     def next_gene(self, genome):
         if self.rng.random() < self.noop_frequency:
-            self.log.debug(u"Generate: Noop")
+            log.debug(u"Generate: Noop")
             return NOOP_GENE
 
         avail_genes = [gene for gene in self.gene_pool if genome.does_gene_fit(gene)]
 
         if not avail_genes:
-            self.log.debug(u"Generate: No available genes")
+            log.debug(u"Generate: No available genes")
             return
 
-        self.log.debug(u"Generate: Available genes {0}".format(avail_genes))
+        log.debug(u"Generate: Available genes {0}".format(avail_genes))
         return self.rng.choice(avail_genes)
 
     def get_gene_param_vals(self, gene):
