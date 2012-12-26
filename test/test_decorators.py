@@ -48,6 +48,17 @@ class TestDecorators(unittest.TestCase):
         t1 = T1()
         self.assertEqual(t1.test_func(), 2)
 
+    def test_types(self):
+        @pyvotune.input_type("int")
+        @pyvotune.output_type("bool")
+        class T4:
+            def __init__(self):
+                pass
+
+        self.assertTrue(T4._pyvotune['output'])
+        self.assertEqual(T4._pyvotune['input']['typename'], 'int')
+        self.assertEqual(T4._pyvotune['output']['typename'], 'bool')
+
     def test_function(self):
         self.assertEqual(
             T3._pyvotune['output']['_fn'], T3.out_state_checker.im_func)

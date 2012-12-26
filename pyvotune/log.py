@@ -47,7 +47,7 @@ def create_logger():
         def format(self, record):
             return "%s [%s] >> %s" % (
                 ("%s %s" % (record.levelname, record.module)).ljust(15)[:15],
-                ("%s:%d:%s" % (record.filename, record.lineno, record.funcName)).ljust(30)[:30],
+                ("%s:%d@%s" % (record.filename, record.lineno, record.funcName)).ljust(30)[:30],
                 record.msg)
 
     handler = DebugHandler()

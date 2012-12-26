@@ -17,6 +17,9 @@ class tune(object):
 
 
 def autotune(cls):
+    """
+    This class has custom input and or output validation functions
+    """
     for name, method in cls.__dict__.items():
         if hasattr(method, "_pyvotune_input_fn"):
             add_property(cls, 'input', '_fn', method)
@@ -26,35 +29,77 @@ def autotune(cls):
     return cls
 
 
+class input_type(tune):
+    """
+    This class consumes input of `typename` type
+    """
+    def __init__(self, typename):
+        self.typename = typename
+
+        super(input_type, self).__init__(
+            'input', 'typename', typename)
+
+
+class output_type(tune):
+    """
+    This class produces output of `typename` type
+    """
+    def __init__(self, typename):
+        self.typename = typename
+
+        super(output_type, self).__init__(
+            'output', 'typename', typename)
+
+
 def input(fn):
+    """
+    Decorator labels a function as an input validator function
+    """
     fn._pyvotune_input_fn = True
     return fn
 
 
 def output(fn):
+    """
+    Decorator labels a function as an output validator function
+    """
     fn._pyvotune_output_fn = True
     return fn
 
 
 def loader(cls):
+    """
+    This gene is only valid as the first gene in the genome
+    """
     return empty_input(cls)
 
 
+def terminal(cls):
+    """
+    This gene is valid as the last gene in a genome
+    """
+    return add_property(cls, 'input', 'terminated', [True, False])
+
+
+def excl_terminal(cls):
+    """
+    This gene is ONLY valid as the terminated gene in a genome
+    """
+    return add_property(cls, 'input', 'terminated', True)
+
+
 def empty_input(cls):
+    """
+    This gene is only valid with an empty state
+    """
     return add_property(cls, 'input', 'empty', True)
 
 
 def non_empty_input(cls):
+    """
+    This gene is only valid with a NON empty assembly state
+    """
     return add_property(cls, 'input', 'empty', False)
-
-
-def scalar_input(cls):
-    cls = non_empty_input(cls)
-    return add_property(cls, 'input', 'valuetype', True)
-
-
-def scalar_output(cls):
-    return add_property(cls, 'output', 'valuetype', True)
 
 
 def sparse_input(cls):

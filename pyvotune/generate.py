@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 
+"""
+    pyvotune.generate
+    --------------------------
+
+    This module defines the Generate class which creates Genomes
+    for consumption by an evoluationary algorithm.
+"""
+
 from pyvotune.log import logger
 from pyvotune.genome import Genome
 from pyvotune.pyvotune_globals import NOOP_GENE
@@ -21,6 +29,9 @@ class Generate:
         self.log = logger()
 
     def generate(self):
+        return self._generate()
+
+    def _generate(self):
         genome = Genome(get_id())
 
         for i in range(self.max_length):
@@ -33,7 +44,8 @@ class Generate:
             params = self.get_gene_param_vals(gene, genome)
             genome.add_gene(params, gene)
 
-        return genome
+        if genome.validate():
+            return genome
 
     def next_gene(self, genome):
         if self.rng.random() < self.noop_frequency:
