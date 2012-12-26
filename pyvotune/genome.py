@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from log import logger
-from assembly_state import AssemblyState
+from pyvotune.log import logger
+from pyvotune.assembly_state import AssemblyState
 
-from pyvotune_globals import *
+from pyvotune.pyvotune_globals import NOOP_GENE
 
 
 class Genome:
     def __init__(self, genome_id):
-        self.logger = logger()
+        self.log = logger()
         self.genome_id = genome_id
         self.param_vals = []
         self.genes = []
@@ -16,7 +16,7 @@ class Genome:
 
         self.assembled = None
 
-        self.logger.debug(
+        self.log.debug(
             u"G{0}: Instantiated new genome".format(self.genome_id))
 
     def add_gene(self, param_vals, gene):
@@ -28,7 +28,7 @@ class Genome:
 
         self.state.gene_update(gene)
 
-        self.logger.debug(
+        self.log.debug(
             u"G{0}: Added new gene {1}".format(self.genome_id, gene))
 
     def does_gene_fit(self, gene):
@@ -46,7 +46,7 @@ class Genome:
         try:
             return self._assemble()
         except:
-            self.logger.exception(
+            self.log.exception(
                 u"G{0}: Assembly hard excepted, failing".format(
                     self.genome_id))
             return False
@@ -62,7 +62,7 @@ class Genome:
             num_gene_params = len(gene_params)
 
             if num_gene_params > len(remaining_param_vals):
-                self.logger.debug(
+                self.log.debug(
                     u"G{0}: Invalid - Not enough remaining parameters ({1} < {2})".format(
                         self.genome_id, num_gene_params, len(remaining_param_vals)))
 
@@ -73,13 +73,13 @@ class Genome:
 
             for i, (param, val) in enumerate(zip(gene_params, gene_param_vals)):
                 if not param.check(val):
-                    self.logger.debug(
+                    self.log.debug(
                         u"G{0}: Invalid - Parameter {1} failed assembly".format(
                             self.genome_id, i))
 
                     return False
 
-        self.logger.debug(
+        self.log.debug(
             u"G{0}: Assembled successfully".format(self.genome_id))
         return True
 

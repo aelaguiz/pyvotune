@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import collections
-from functools import wraps
 
 
 class tune(object):
@@ -52,6 +51,11 @@ def sparse_input(cls):
 
 def sparse_output(cls):
     return add_property(cls, 'output', 'sparse', True)
+
+
+def unique(cls):
+    cls = add_property(cls, 'input', 'cls_' + cls.__name__, None)
+    return add_property(cls, 'output', 'cls_' + cls.__name__, True)
 
 
 def add_property(cls, direction, name, value):

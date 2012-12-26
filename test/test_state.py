@@ -78,3 +78,14 @@ class TestState(unittest.TestCase):
         self.assertTrue(state['sparse'])
 
         self.assertTrue(state.is_gene_avail(G4))
+
+    def test_unique(self):
+        @pyvotune.unique
+        class G5:
+            def __init__(self):
+                pass
+
+        state = pyvotune.AssemblyState()
+        self.assertTrue(state.is_gene_avail(G5))
+        state.gene_update(G5)
+        self.assertFalse(state.is_gene_avail(G5))

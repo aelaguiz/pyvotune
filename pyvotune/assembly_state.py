@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+from pyvotune.log import logger
+
+
 class AssemblyState(dict):
     """
     AssemblyState is a simple key/value store which is used to
@@ -6,6 +11,7 @@ class AssemblyState(dict):
     """
     def __init__(self):
         super(AssemblyState, self).__setitem__('empty', True)
+        self.log = logger()
 
     def __setitem__(self, key, val):
         if key == 'empty':
@@ -30,10 +36,21 @@ class AssemblyState(dict):
             for req, val in input_requirements.iteritems():
                 if req == '_fn':
                     if not val(gene, self):
+                        self.log.debug(
+                            u"Gene {0} failed validation function {1}".format(
+                                gene, val))
                         return False
+                elif val is None and req not in self:
+                    continue
                 elif req not in self:
+                    self.log.debug(
+                        u"Gene {0} is missing requirement {1}:{2}".format(
+                            gene, req, val))
                     return False
                 elif self[req] != val:
+                    self.log.debug(
+                        u"Gene {0} requirement {1} failed {2} != {3}".format(
+                            gene, req, self[req], val))
                     return False
 
         return True

@@ -8,9 +8,9 @@
     generation and consumption.
 """
 
-from param import Param
-from param_checkers import *
-from param_generators import *
+from pyvotune.param import Param
+from pyvotune.param_checkers import *
+from pyvotune.param_generators import *
 
 import random
 
