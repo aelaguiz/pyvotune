@@ -18,7 +18,8 @@
             checker_fn=<checker_fn>,
             checker_args=<checker arguments dict>
             generator_fn=<generator_fn>,
-            generator_args=<generator arguments dict>)
+            generator_args=<generator arguments dict>,
+            rng=random)
 
     Range based forms:
         @pyevotune.int_param(name='int1', range=(0, 5))
@@ -31,19 +32,44 @@
 """
 
 from param import Param
+from param_checkers import *
+from param_generators import *
+
+import random
 
 
 class param(object):
     def __init__(
-            self, name, checker_fn, checker_args, generator_fn, generator_args):
-        self.name = name
-        self.checker_fn = checker_fn
-        self.checker_args = checker_args
-        self.generator_fn = generator_fn
-        self.generator_args = generator_args
+            self, name, checker_fn, checker_args, generator_fn, generator_args,
+            rng=random):
+        self.param = Param(
+            name, checker_fn, checker_args, generator_fn, generator_args, rng)
 
     def __call__(self, cls):
-        return add_param(cls, self)
+        return add_param(cls, self.param)
+
+
+class int_param(param):
+    def __init__(
+            self, name, range, choices=None, rng=random):
+
+        checker_args = {
+            'lower_bound': range[0],
+            'upper_bound': range[1]
+        }
+
+        generator_fn = range_generator
+        generator_args = checker_args
+
+        if choices:
+            generator_fn = choice_generator
+            generator_args = {
+                'choices': choices
+            }
+
+        super(int_param, self).__init__(
+            name, range_checker, checker_args, generator_fn, generator_args,
+            rng)
 
 
 def add_param(cls, param):

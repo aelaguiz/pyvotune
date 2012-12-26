@@ -9,6 +9,9 @@ class T1:
     def __init__(self):
         pass
 
+    def test_func(self):
+        return 2
+
 
 @pyevotune.sparse_output
 class T2:
@@ -20,6 +23,9 @@ class T2:
 class T3:
     def __init__(self):
         pass
+
+    def test_func(self):
+        return 1
 
     @pyevotune.output
     def out_state_checker(self, state):
@@ -39,8 +45,14 @@ class TestDecorators(unittest.TestCase):
         self.assertTrue(T2._pyevotune['output']['sparse'])
         self.assertEqual(T1._pyevotune['output'], T2._pyevotune['output'])
 
+        t1 = T1()
+        self.assertEqual(t1.test_func(), 2)
+
     def test_function(self):
         self.assertEqual(
             T3._pyevotune['output']['_fn'], T3.out_state_checker.im_func)
         self.assertEqual(
             T3._pyevotune['input']['_fn'], T3.in_state_checker.im_func)
+
+        t3 = T3()
+        self.assertEqual(t3.test_func(), 1)
