@@ -23,16 +23,18 @@ class AssemblyState(dict):
         Checks a gene to ensure that the input requirements
         are met by this assembly state
         """
-        input_requirements = gene._pyvotune['input']
 
-        for req, val in input_requirements.iteritems():
-            if req == '_fn':
-                if not val(gene, self):
+        if hasattr(gene, '_pyvotune') and 'input' in gene._pyvotune:
+            input_requirements = gene._pyvotune['input']
+
+            for req, val in input_requirements.iteritems():
+                if req == '_fn':
+                    if not val(gene, self):
+                        return False
+                elif req not in self:
                     return False
-            elif req not in self:
-                return False
-            elif self[req] != val:
-                return False
+                elif self[req] != val:
+                    return False
 
         return True
 
@@ -41,13 +43,15 @@ class AssemblyState(dict):
         Updates the state to match the state provided by a gene
         on addition to a genome (output state)
         """
-        output_updates = gene._pyvotune['output']
 
-        for key, val in output_updates.iteritems():
-            if key == '_fn':
-                self = val(gene, self)
-            else:
-                self[key] = val
+        if hasattr(gene, '_pyvotune') and 'output' in gene._pyvotune:
+            output_updates = gene._pyvotune['output']
+
+            for key, val in output_updates.iteritems():
+                if key == '_fn':
+                    self = val(gene, self)
+                else:
+                    self[key] = val
 
         self['empty'] = False
         return self

@@ -92,7 +92,7 @@ class bool(param):
             self, rng=random):
 
         super(bool, self).__init__(
-            nop_checker, None, bool_generator, None,
+            noop_checker, None, bool_generator, None,
             rng)
 
 

@@ -6,7 +6,7 @@ import pyvotune
 
 class TestState(unittest.TestCase):
     def setUp(self):
-        pyvotune.set_debug(True)
+        pyvotune.set_debug(False)
 
     def test_state(self):
         state = pyvotune.AssemblyState()

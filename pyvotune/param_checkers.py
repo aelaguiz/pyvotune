@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-def nop_checker(val):
+def noop_checker(val):
     """
     Allows any value to be valid
     """

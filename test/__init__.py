@@ -4,3 +4,4 @@ from test_decorators import *
 from test_state import *
 from test_param_decorators import *
 from test_genome import *
+from test_generate import *

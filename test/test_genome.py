@@ -20,6 +20,9 @@ class P2:
 
 
 class TestGenome(unittest.TestCase):
+    def setUp(self):
+        pyvotune.set_debug(False)
+
     def test_assembly(self):
         g = pyvotune.Genome(get_id())
         g.add_gene([6], P1)

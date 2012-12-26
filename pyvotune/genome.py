@@ -3,6 +3,8 @@
 from log import logger
 from assembly_state import AssemblyState
 
+from pyvotune_globals import *
+
 
 class Genome:
     def __init__(self, genome_id):
@@ -18,10 +20,29 @@ class Genome:
             u"G{0}: Instantiated new genome".format(self.genome_id))
 
     def add_gene(self, param_vals, gene):
+        """
+        Adds a gene and it's parameters to the current genome
+        """
         self.param_vals += param_vals
         self.genes.append(gene)
 
+        self.state.gene_update(gene)
+
+        self.logger.debug(
+            u"G{0}: Added new gene {1}".format(self.genome_id, gene))
+
+    def does_gene_fit(self, gene):
+        """
+        Checks if a gene would fit into the current genome given the
+        existing assembly state
+        """
+        return self.state.is_gene_avail(gene)
+
     def assemble(self):
+        """
+        Assembles the current genome, swallows all exceptions and
+        simply fails assembly if there are problems
+        """
         try:
             return self._assemble()
         except:
@@ -34,6 +55,9 @@ class Genome:
         remaining_param_vals = list(self.param_vals)
 
         for gene in self.genes:
+            if gene == NOOP_GENE:
+                continue
+
             gene_params = self.get_gene_params(gene)
             num_gene_params = len(gene_params)
 
