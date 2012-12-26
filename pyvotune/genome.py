@@ -97,6 +97,8 @@ class Genome:
                 'factory_fn' in gene._pyvotune_assembly_params:
             cons = gene._pyvotune_assembly_params['factory_fn']
 
+        self.log.debug(u"G{0}: Instantiating gene {1} with {2}".format(
+            self.genome_id, gene, param_vals))
         return cons(*param_vals)
 
     def get_gene_params(self, gene):

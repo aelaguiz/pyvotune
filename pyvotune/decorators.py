@@ -36,12 +36,25 @@ def output(fn):
     return fn
 
 
+def loader(cls):
+    return empty_input(cls)
+
+
 def empty_input(cls):
     return add_property(cls, 'input', 'empty', True)
 
 
 def non_empty_input(cls):
     return add_property(cls, 'input', 'empty', False)
+
+
+def scalar_input(cls):
+    cls = non_empty_input(cls)
+    return add_property(cls, 'input', 'valuetype', True)
+
+
+def scalar_output(cls):
+    return add_property(cls, 'output', 'valuetype', True)
 
 
 def sparse_input(cls):

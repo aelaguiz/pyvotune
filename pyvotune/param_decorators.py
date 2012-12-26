@@ -35,6 +35,22 @@ class param(object):
         return add_param(cls, self.param)
 
 
+class choice(param):
+    """
+    @pyvotune.choice(choices=[-2, 0, 7, 10]), rng=random
+    """
+    def __init__(
+            self, choices, rng=random):
+
+        param.__init__(
+            self, choice_checker, {
+                'choices': set(choices)
+            }, choice_generator, {
+                'choices': list(choices)
+            },
+            rng)
+
+
 class int(param):
     """
     @pyvotune.int(range=(0, 5))

@@ -88,3 +88,17 @@ class TestParamDecorators(unittest.TestCase):
             self.assertTrue(
                 T5._pyvotune_params[0].check(
                     T5._pyvotune_params[0].generate()))
+
+    def test_int_choice(self):
+        @pyvotune.choice(
+            choices=[0, 1, 3, 10])
+        class T6:
+            def __init__(self, p1):
+                pass
+
+        self.assertTrue(T6._pyvotune_params[0].check(10))
+        self.assertFalse(T6._pyvotune_params[0].check(4))
+
+        for i in range(15):
+            self.assertTrue(
+                T6._pyvotune_params[0].generate() in [0, 1, 3, 10])

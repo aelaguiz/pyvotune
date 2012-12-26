@@ -10,3 +10,7 @@ def noop_checker(val):
 
 def range_checker(val, lower_bound, upper_bound):
     return val >= lower_bound and val < upper_bound
+
+
+def choice_checker(val, choices):
+    return val in choices
