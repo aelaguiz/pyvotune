@@ -70,9 +70,9 @@ class TestGenerate(unittest.TestCase):
             genome = gen.generate()
 
             self.assertTrue(genome)
-            self.assertEqual(len(genome.genes), 2)
-            self.assertEqual(genome.genes[0], G1)
-            self.assertEqual(genome.genes[1], G2)
+            self.assertEqual(len(genome), 5)
+            self.assertEqual(genome[2][1], G1)
+            self.assertEqual(genome[4][1], G2)
 
         gen = pyvotune.Generate(
             gene_pool=[G1, G2],
@@ -80,9 +80,9 @@ class TestGenerate(unittest.TestCase):
 
         for i in range(10):
             genome2 = gen.generate()
-            self.assertEqual(len(genome2.genes), 2)
-            self.assertEqual(genome2.genes[0], NOOP_GENE)
-            self.assertEqual(genome2.genes[1], NOOP_GENE)
+            self.assertEqual(len(genome2), 2)
+            self.assertEqual(genome2[0][1], NOOP_GENE)
+            self.assertEqual(genome2[1][1], NOOP_GENE)
 
     def test_params(self):
         gen = pyvotune.Generate(

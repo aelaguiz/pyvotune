@@ -16,11 +16,9 @@ from pyvotune.pyvotune_globals import NOOP_GENE
 log = logger()
 
 
-class Genome:
+class Genome(list):
     def __init__(self, genome_id):
         self.genome_id = genome_id
-        self.param_vals = []
-        self.genes = []
         self.state = AssemblyState()
 
         self.assembled = None
@@ -32,8 +30,8 @@ class Genome:
         """
         Adds a gene and it's parameters to the current genome
         """
-        self.param_vals += param_vals
-        self.genes.append(gene)
+        self += [('param', p) for p in param_vals]
+        self.append(('gene', gene))
 
         self.state.gene_update(gene)
 
@@ -78,9 +76,10 @@ class Genome:
         Actual work function that validates with optional assembly step
         """
         to_assemble = []
-        remaining_param_vals = list(self.param_vals)
 
-        active_genes = [g for g in self.genes if g != NOOP_GENE]
+        # Split out into params and genes
+        remaining_param_vals = [g for t, g in self if t == 'param']
+        active_genes = [g for t, g in self if t == 'gene' and g != NOOP_GENE]
         num_active = len(active_genes)
 
         self.state.clear()

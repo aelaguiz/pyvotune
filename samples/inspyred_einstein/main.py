@@ -1,5 +1,6 @@
 import inspyred
 import pyvotune
+import sys
 
 import random
 
@@ -60,7 +61,12 @@ def generator(random, args):
 
 @inspyred.ec.evaluators.evaluator
 def evaluator(candidate, args):
-    candidate.assemble()
+    if not candidate.assemble():
+        #print "Invalidate candidate", candidate
+        return sys.maxint
+
+    print "Validate candidate", candidate
+
     individual = candidate.assembled
     loader = individual[0]
     loader.set_equation(individual[1:])
@@ -77,7 +83,7 @@ def evaluator(candidate, args):
 
         total_err += err
 
-    #print "Evaluating", loader, "=", total_err
+    print "Evaluating", loader, "=", total_err
 
     return total_err
 
@@ -95,6 +101,7 @@ if __name__ == '__main__':
 
     ea = inspyred.ec.GA(random.Random())
     ea.terminator = inspyred.ec.terminators.time_termination
+    ea.observer = inspyred.ec.observers.stats_observer
     #ea.logger = pyvotune.log.logger()
 
     final_pop = ea.evolve(
