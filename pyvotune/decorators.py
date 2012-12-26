@@ -74,18 +74,25 @@ def loader(cls):
     return empty_input(cls)
 
 
+def non_terminal(cls):
+    """
+    This gene is NOT valid as the last gene in a genome
+    """
+    return add_property(cls, 'input', 'last', False)
+
+
 def terminal(cls):
     """
     This gene is valid as the last gene in a genome
     """
-    return add_property(cls, 'input', 'terminated', [True, False])
+    return add_property(cls, 'input', 'last', [True, False])
 
 
 def excl_terminal(cls):
     """
-    This gene is ONLY valid as the terminated gene in a genome
+    This gene is ONLY valid as the last gene in a genome
     """
-    return add_property(cls, 'input', 'terminated', True)
+    return add_property(cls, 'input', 'last', True)
 
 
 def empty_input(cls):
@@ -119,6 +126,9 @@ def unique(cls):
 def add_property(cls, direction, name, value):
     if not hasattr(cls, '_pyvotune'):
         cls._pyvotune = collections.defaultdict(dict)
+
+        # Ensure that genes have to get their terminal status explicitely set
+        cls._pyvotune['input']['last'] = False
 
     cls._pyvotune[direction][name] = value
     return cls

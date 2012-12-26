@@ -85,8 +85,13 @@ class Genome:
         self.state.clear()
 
         for i, gene in enumerate(active_genes):
+            # We want to ensure that the final gene is validat as a terminal, so when
+            # we reach the end of the genome ensure the state is updated to reflect that
+            if i == (num_active - 1):
+                self.state["last"] = True
+
             if not self.does_gene_fit(gene):
-                self.log.warning(
+                self.log.debug(
                     u"G{0}: Invalid - Gene does not fit in current state {1} {2}".format(
                         self.genome_id, gene, self.state))
                 return False

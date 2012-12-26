@@ -19,6 +19,7 @@ class G1:
 
 @pyvotune.sparse_input
 @pyvotune.float(range=(-3, 72))
+@pyvotune.terminal
 class G2:
     def __init__(self, fval):
         self.fval = fval
@@ -27,6 +28,38 @@ class G2:
 class TestGenerate(unittest.TestCase):
     def setUp(self):
         pyvotune.set_debug(False)
+
+    def test_term(self):
+        @pyvotune.terminal
+        class G3:
+            def __init__(self):
+                pass
+
+        @pyvotune.non_terminal
+        class G4:
+            def __init__(self):
+                pass
+
+        @pyvotune.excl_terminal
+        class G5:
+            def __init__(self):
+                pass
+
+        genome = pyvotune.Genome("terminal_test")
+        genome.add_gene([], G3)
+        self.assertTrue(genome.validate())
+
+        genome.add_gene([], G4)
+        self.assertFalse(genome.validate())
+
+        genome.add_gene([], G3)
+        self.assertTrue(genome.validate())
+
+        genome.add_gene([], G5)
+        self.assertTrue(genome.validate())
+
+        genome.add_gene([], G3)
+        self.assertFalse(genome.validate())
 
     def test_gen(self):
         gen = pyvotune.Generate(

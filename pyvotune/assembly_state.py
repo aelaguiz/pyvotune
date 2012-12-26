@@ -10,7 +10,7 @@ class AssemblyState(dict):
     for creation of genomes as well as assembly of existing genomes
     """
     def __init__(self):
-        super(AssemblyState, self).__setitem__('empty', True)
+        self.clear()
         self.log = logger()
 
     def __setitem__(self, key, val):
@@ -23,6 +23,7 @@ class AssemblyState(dict):
     def clear(self):
         super(AssemblyState, self).clear()
         super(AssemblyState, self).__setitem__('empty', True)
+        super(AssemblyState, self).__setitem__('last', False)
 
     def is_gene_avail(self, gene):
         """
@@ -44,9 +45,15 @@ class AssemblyState(dict):
                     continue
                 elif req not in self:
                     self.log.debug(
-                        u"Gene {0} is missing requirement {1}:{2}".format(
-                            gene, req, val))
+                        u"Gene {0} is missing requirement {1}:{2} in state {3}".format(
+                            gene, req, val, self))
                     return False
+                elif isinstance(val, list) or isinstance(val, set):
+                    if self[req] not in val:
+                        self.log.debug(
+                            u"Gene {0} requirement {1} failed {2} not in {3}".format(
+                                gene, req, self[req], val))
+                        return False
                 elif self[req] != val:
                     self.log.debug(
                         u"Gene {0} requirement {1} failed {2} != {3}".format(
