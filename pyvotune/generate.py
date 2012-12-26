@@ -30,7 +30,8 @@ class Generate:
                 self.log.debug(u"Generate: Failed, ran out of valid genes")
                 return
 
-            genome.add_gene([], gene)
+            params = self.get_gene_param_vals(gene, genome)
+            genome.add_gene(params, gene)
 
         return genome
 
@@ -47,3 +48,7 @@ class Generate:
 
         self.log.debug(u"Generate: Available genes {0}".format(avail_genes))
         return self.rng.choice(avail_genes)
+
+    def get_gene_param_vals(self, gene, genome):
+        params = genome.get_gene_params(gene)
+        return [p.generate() for p in params]
