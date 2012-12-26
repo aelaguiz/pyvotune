@@ -3,12 +3,6 @@
 from logging import getLogger, StreamHandler, Formatter, getLoggerClass, DEBUG
 
 logger_name = 'pyvotune'
-debug_log_format = (
-    '-' * 80 + '\n' +
-    '%(levelname)s in %(module)s [%(pathname)s:%(lineno)d]:\n' +
-    '%(message)s\n' +
-    '-' * 80
-)
 
 
 global_debug = False
@@ -49,9 +43,16 @@ def create_logger():
         def emit(x, record):
             StreamHandler.emit(x, record) if global_debug else None
 
+    class DebugFormatter(Formatter):
+        def format(self, record):
+            return "%s [%s] >> %s" % (
+                ("%s %s" % (record.levelname, record.module)).ljust(15)[:15],
+                ("%s:%d:%s" % (record.filename, record.lineno, record.funcName)).ljust(30)[:30],
+                record.msg)
+
     handler = DebugHandler()
     handler.setLevel(DEBUG)
-    handler.setFormatter(Formatter(debug_log_format))
+    handler.setFormatter(DebugFormatter())
     logger = getLogger(logger_name)
 
     # just in case that was not a new logger, get rid of all the handlers
