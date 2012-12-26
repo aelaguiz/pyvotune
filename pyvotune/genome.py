@@ -52,6 +52,7 @@ class Genome:
             return False
 
     def _assemble(self):
+        assembled = []
         remaining_param_vals = list(self.param_vals)
 
         for gene in self.genes:
@@ -79,9 +80,24 @@ class Genome:
 
                     return False
 
+            gene_obj = self.construct_gene(gene, gene_param_vals)
+            assembled.append(gene_obj)
+
+        self.assembled = assembled
         self.log.debug(
             u"G{0}: Assembled successfully".format(self.genome_id))
         return True
+
+    def construct_gene(self, gene, param_vals):
+        """
+        Returns an instantiated gene given the values to pass to it's constructor/factory meth
+        """
+        cons = gene
+        if hasattr(gene, '_pyvotune_assembly_params') and\
+                'factory_fn' in gene._pyvotune_assembly_params:
+            cons = gene._pyvotune_assembly_params['factory_fn']
+
+        return cons(*param_vals)
 
     def get_gene_params(self, gene):
         if not hasattr(gene, '_pyvotune_params'):

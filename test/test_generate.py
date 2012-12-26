@@ -10,7 +10,7 @@ from pyvotune.pyvotune_globals import *
 @pyvotune.sparse_output
 @pyvotune.int(
     range=(0, 5))
-@pyvotune.bool
+@pyvotune.bool()
 class G1:
     def __init__(self, ival, bval):
         self.ival = ival
@@ -34,12 +34,12 @@ class TestGenerate(unittest.TestCase):
             max_length=2, noop_frequency=0.)
 
         for i in range(10):
-            genome1 = gen.generate()
+            genome = gen.generate()
 
-            self.assertTrue(genome1)
-            self.assertEqual(len(genome1.genes), 2)
-            self.assertEqual(genome1.genes[0], G1)
-            self.assertEqual(genome1.genes[1], G2)
+            self.assertTrue(genome)
+            self.assertEqual(len(genome.genes), 2)
+            self.assertEqual(genome.genes[0], G1)
+            self.assertEqual(genome.genes[1], G2)
 
         gen = pyvotune.Generate(
             gene_pool=[G1, G2],
@@ -57,6 +57,50 @@ class TestGenerate(unittest.TestCase):
             max_length=2, noop_frequency=0.)
 
         for i in range(10):
-            genome1 = gen.generate()
+            genome = gen.generate()
 
-            self.assertTrue(genome1.assemble())
+            self.assertTrue(genome.assemble())
+
+    def test_assembly(self):
+        gen = pyvotune.Generate(
+            gene_pool=[G1, G2],
+            max_length=2, noop_frequency=0.)
+
+        genome = pyvotune.Genome("testid")
+        genome.add_gene([2, True], G1)
+        genome.add_gene([2.5], G2)
+
+        self.assertTrue(genome.assemble())
+        individual = genome.assembled
+
+        self.assertEqual(individual[0].ival, 2)
+        self.assertEqual(individual[0].bval, True)
+        self.assertEqual(individual[1].fval, 2.5)
+
+    def test_assembly_factory(self):
+        def make_g3(fval):
+            g = G3()
+            g.fval = fval
+            return g
+
+        @pyvotune.sparse_input
+        @pyvotune.float(range=(-3, 72))
+        @pyvotune.factory(make_g3)
+        class G3:
+            def __init__(self):
+                pass
+
+        gen = pyvotune.Generate(
+            gene_pool=[G1, G3],
+            max_length=2, noop_frequency=0.)
+
+        genome = pyvotune.Genome("testid")
+        genome.add_gene([2, True], G1)
+        genome.add_gene([2.5], G2)
+
+        self.assertTrue(genome.assemble())
+        individual = genome.assembled
+
+        self.assertEqual(individual[0].ival, 2)
+        self.assertEqual(individual[0].bval, True)
+        self.assertEqual(individual[1].fval, 2.5)

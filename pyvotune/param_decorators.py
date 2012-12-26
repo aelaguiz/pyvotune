@@ -57,8 +57,8 @@ class int(param):
                 'choices': choices
             }
 
-        super(int, self).__init__(
-            range_checker, checker_args, generator_fn, generator_args,
+        param.__init__(
+            self, range_checker, checker_args, generator_fn, generator_args,
             rng)
 
 
@@ -78,8 +78,8 @@ class float(param):
         generator_fn = uniform_generator
         generator_args = checker_args
 
-        super(float, self).__init__(
-            range_checker, checker_args, generator_fn, generator_args,
+        param.__init__(
+            self, range_checker, checker_args, generator_fn, generator_args,
             rng)
 
 
@@ -91,9 +91,8 @@ class bool(param):
     def __init__(
             self, rng=random):
 
-        super(bool, self).__init__(
-            noop_checker, None, bool_generator, None,
-            rng)
+        param.__init__(
+            self, noop_checker, None, bool_generator, None, rng)
 
 
 def add_param(cls, param):

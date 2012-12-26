@@ -2,6 +2,7 @@
 
 from decorators import *
 from param_decorators import *
+from assembly_decorators import *
 from assembly_state import AssemblyState
 from generate import Generate
 from param import Param
