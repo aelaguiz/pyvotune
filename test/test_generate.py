@@ -5,13 +5,16 @@ import pyvotune
 
 
 class TestGenerate(unittest.TestCase):
+    def setUp(self):
+        pyvotune.set_debug(True)
+
     def test_avail(self):
         @pyvotune.sparse_input
         class G1:
             def __init__(self):
                 pass
 
-        gen = pyvotune.Generate(debug=True)
+        gen = pyvotune.Generate()
         self.assertFalse(gen.is_gene_avail(G1, {}))
         self.assertTrue(gen.is_gene_avail(G1, {'sparse': True, 'empty': False}))
 
@@ -28,7 +31,7 @@ class TestGenerate(unittest.TestCase):
 
                 return state['avail']
 
-        gen = pyvotune.Generate(debug=True)
+        gen = pyvotune.Generate()
         self.assertFalse(gen.is_gene_avail(G2, {}))
         self.assertTrue(gen.is_gene_avail(G2, {'avail': True}))
 
@@ -44,7 +47,7 @@ class TestGenerate(unittest.TestCase):
             def __init__(self):
                 pass
 
-        gen = pyvotune.Generate(debug=True)
+        gen = pyvotune.Generate()
         self.assertFalse(gen.is_gene_avail(G3, {'empty': False}))
         self.assertTrue(gen.is_gene_avail(G3, {'empty': True}))
         self.assertFalse(gen.is_gene_avail(G4, {}))

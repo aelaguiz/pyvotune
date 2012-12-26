@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
 
+from log import logger
+
 
 class Genome:
     def __init__(self, genome_id):
+        self.logger = logger()
         self.genome_id = genome_id
         self.param_vals = []
         self.genes = []
         self.assembled = None
+
+        self.logger.debug(
+            u"G{0}: Instantiated new genome".format(self.genome_id))
 
     def add_gene(self, param_vals, gene):
         self.param_vals += param_vals
@@ -14,7 +20,7 @@ class Genome:
 
     def assemble(self):
         try:
-            return self.assemble()
+            return self._assemble()
         except:
             self.logger.exception(
                 u"G{0}: Assembly hard excepted, failing".format(

@@ -11,38 +11,48 @@ debug_log_format = (
 )
 
 
-def create_logger(obj):
-    """Creates a logger for the given objlication.  This logger works
-    similar to a regular Python logger but changes the effective logging
-    level based on the objlication's debug flag.  Furthermore this
-    function also removes all attached handlers in case there was a
-    logger with the log name before.
-    """
+global_debug = False
+global_logobj = None
+
+
+def set_debug(debug=True):
+    global global_logobj
+    global global_debug
+
+    global_debug = debug
+
+    # If we are toggling global_debug flag and
+    # a logger is already created, must replace it
+    if global_logobj:
+        global_logobj = create_logger()
+
+
+def logger():
+    global global_logobj
+
+    if not global_logobj:
+        global_logobj = create_logger()
+
+    return global_logobj
+
+
+def create_logger():
     Logger = getLoggerClass()
-
-    if not hasattr(obj, 'debug'):
-        obj.debug = False
-
-    if not hasattr(obj, 'debug_log_format'):
-        obj.debug_log_format = debug_log_format
-
-    if not hasattr(obj, 'logger_name'):
-        obj.logger_name = logger_name
 
     class DebugLogger(Logger):
         def getEffectiveLevel(x):
-            if x.level == 0 and obj.debug:
+            if x.level == 0 and global_debug:
                 return DEBUG
             return Logger.getEffectiveLevel(x)
 
     class DebugHandler(StreamHandler):
         def emit(x, record):
-            StreamHandler.emit(x, record) if obj.debug else None
+            StreamHandler.emit(x, record) if global_debug else None
 
     handler = DebugHandler()
     handler.setLevel(DEBUG)
-    handler.setFormatter(Formatter(obj.debug_log_format))
-    logger = getLogger(obj.logger_name)
+    handler.setFormatter(Formatter(debug_log_format))
+    logger = getLogger(logger_name)
 
     # just in case that was not a new logger, get rid of all the handlers
     # already attached to it.

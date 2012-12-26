@@ -5,3 +5,4 @@ from param_decorators import *
 from generate import Generate
 from param import Param
 from genome import Genome
+from log import set_debug

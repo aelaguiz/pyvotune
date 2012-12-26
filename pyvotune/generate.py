@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import random
+from log import logger
 
 
 class Generate:
-    def __init__(self, debug=False, rng=random):
-        self.debug = debug
+    def __init__(self, rng=random):
         self.rng = rng
         pass
 
@@ -50,18 +50,3 @@ class Generate:
 
         state['empty'] = False
         return state
-
-    @property
-    def logger(self):
-        if not hasattr(self, '_logger'):
-            self._logger = None
-
-        if not hasattr(self, 'logger_name'):
-            self.logger_name = None
-
-        if self._logger and self._logger.name == self.logger_name:
-            return self._logger
-
-        from pyvotune.log import create_logger
-        self._logger = rv = create_logger(self)
-        return rv
