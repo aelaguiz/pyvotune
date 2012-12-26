@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-    pyevotune.param_decorators
+    pyvotune.param_decorators
     --------------------------
 
     This module defines decorators which are used to control parameter
@@ -18,7 +18,7 @@ import random
 class param(object):
     """
     General form:
-        @pyevotune.param(
+        @pyvotune.param(
             checker_fn=<checker_fn>,
             checker_args=<checker arguments dict>
             generator_fn=<generator_fn>,
@@ -37,8 +37,8 @@ class param(object):
 
 class int(param):
     """
-    @pyevotune.int(range=(0, 5))
-    @pyevotune.int(range=(0, 5), choices=[-2, 0, 7, 10]), rng=random
+    @pyvotune.int(range=(0, 5))
+    @pyvotune.int(range=(0, 5), choices=[-2, 0, 7, 10]), rng=random
     """
     def __init__(
             self, range, choices=None, rng=random):
@@ -64,8 +64,8 @@ class int(param):
 
 class float(param):
     """
-    @pyevotune.float(range=(0, 5.))
-    @pyevotune.float(range=(0, 5.), rng=random
+    @pyvotune.float(range=(0, 5.))
+    @pyvotune.float(range=(0, 5.), rng=random
     """
     def __init__(
             self, range, rng=random):
@@ -85,8 +85,8 @@ class float(param):
 
 class bool(param):
     """
-    @pyevotune.bool()
-    @pyevotune.bool(rng=random)
+    @pyvotune.bool()
+    @pyvotune.bool(rng=random)
     """
     def __init__(
             self, rng=random):
@@ -97,9 +97,9 @@ class bool(param):
 
 
 def add_param(cls, param):
-    if not hasattr(cls, '_pyevotune_params'):
-        cls._pyevotune_params = []
+    if not hasattr(cls, '_pyvotune_params'):
+        cls._pyvotune_params = []
 
-    cls._pyevotune_params.append(param)
+    cls._pyvotune_params.append(param)
 
     return cls

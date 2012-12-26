@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-import pyevotune
+import pyvotune
 
 
-@pyevotune.tune(direction='output', name='sparse', value=True)
+@pyvotune.tune(direction='output', name='sparse', value=True)
 class T1:
     def __init__(self):
         pass
@@ -13,13 +13,13 @@ class T1:
         return 2
 
 
-@pyevotune.sparse_output
+@pyvotune.sparse_output
 class T2:
     def __init__(self):
         pass
 
 
-@pyevotune.autotune
+@pyvotune.autotune
 class T3:
     def __init__(self):
         pass
@@ -27,32 +27,32 @@ class T3:
     def test_func(self):
         return 1
 
-    @pyevotune.output
+    @pyvotune.output
     def out_state_checker(self, state):
         pass
 
-    @pyevotune.input
+    @pyvotune.input
     def in_state_checker(self, state):
         pass
 
 
 class TestDecorators(unittest.TestCase):
     def test_output(self):
-        self.assertTrue(T1._pyevotune['output'])
-        self.assertTrue(T1._pyevotune['output']['sparse'])
+        self.assertTrue(T1._pyvotune['output'])
+        self.assertTrue(T1._pyvotune['output']['sparse'])
 
-        self.assertTrue(T2._pyevotune['output'])
-        self.assertTrue(T2._pyevotune['output']['sparse'])
-        self.assertEqual(T1._pyevotune['output'], T2._pyevotune['output'])
+        self.assertTrue(T2._pyvotune['output'])
+        self.assertTrue(T2._pyvotune['output']['sparse'])
+        self.assertEqual(T1._pyvotune['output'], T2._pyvotune['output'])
 
         t1 = T1()
         self.assertEqual(t1.test_func(), 2)
 
     def test_function(self):
         self.assertEqual(
-            T3._pyevotune['output']['_fn'], T3.out_state_checker.im_func)
+            T3._pyvotune['output']['_fn'], T3.out_state_checker.im_func)
         self.assertEqual(
-            T3._pyevotune['input']['_fn'], T3.in_state_checker.im_func)
+            T3._pyvotune['input']['_fn'], T3.in_state_checker.im_func)
 
         t3 = T3()
         self.assertEqual(t3.test_func(), 1)

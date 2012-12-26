@@ -26,7 +26,7 @@ class Generate:
         return self.rng.choice(avail_genes)
 
     def is_gene_avail(self, gene, state):
-        input_requirements = gene._pyevotune['input']
+        input_requirements = gene._pyvotune['input']
 
         for req, val in input_requirements.iteritems():
             if req == '_fn':
@@ -40,7 +40,7 @@ class Generate:
         return True
 
     def update_state(self, gene, state):
-        output_updates = gene._pyevotune['output']
+        output_updates = gene._pyvotune['output']
 
         for key, val in output_updates.iteritems():
             if key == '_fn':
@@ -62,6 +62,6 @@ class Generate:
         if self._logger and self._logger.name == self.logger_name:
             return self._logger
 
-        from pyevotune.log import create_logger
+        from pyvotune.log import create_logger
         self._logger = rv = create_logger(self)
         return rv

@@ -19,21 +19,21 @@ class tune(object):
 
 def autotune(cls):
     for name, method in cls.__dict__.items():
-        if hasattr(method, "_pyevotune_input_fn"):
+        if hasattr(method, "_pyvotune_input_fn"):
             add_property(cls, 'input', '_fn', method)
-        elif hasattr(method, "_pyevotune_output_fn"):
+        elif hasattr(method, "_pyvotune_output_fn"):
             add_property(cls, 'output', '_fn', method)
 
     return cls
 
 
 def input(fn):
-    fn._pyevotune_input_fn = True
+    fn._pyvotune_input_fn = True
     return fn
 
 
 def output(fn):
-    fn._pyevotune_output_fn = True
+    fn._pyvotune_output_fn = True
     return fn
 
 
@@ -55,8 +55,8 @@ def sparse_output(cls):
 
 
 def add_property(cls, direction, name, value):
-    if not hasattr(cls, '_pyevotune'):
-        cls._pyevotune = collections.defaultdict(dict)
+    if not hasattr(cls, '_pyvotune'):
+        cls._pyvotune = collections.defaultdict(dict)
 
-    cls._pyevotune[direction][name] = value
+    cls._pyvotune[direction][name] = value
     return cls

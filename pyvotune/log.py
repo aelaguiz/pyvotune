@@ -2,7 +2,7 @@
 
 from logging import getLogger, StreamHandler, Formatter, getLoggerClass, DEBUG
 
-logger_name = 'pyevotune'
+logger_name = 'pyvotune'
 debug_log_format = (
     '-' * 80 + '\n' +
     '%(levelname)s in %(module)s [%(pathname)s:%(lineno)d]:\n' +
