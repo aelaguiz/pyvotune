@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from log import logger
+from assembly_state import AssemblyState
 
 
 class Genome:
@@ -9,6 +10,8 @@ class Genome:
         self.genome_id = genome_id
         self.param_vals = []
         self.genes = []
+        self.state = AssemblyState()
+
         self.assembled = None
 
         self.logger.debug(
@@ -60,18 +63,3 @@ class Genome:
         if not hasattr(gene, '_pyvotune_params'):
             return []
         return gene._pyvotune_params
-
-    @property
-    def logger(self):
-        if not hasattr(self, '_logger'):
-            self._logger = None
-
-        if not hasattr(self, 'logger_name'):
-            self.logger_name = None
-
-        if self._logger and self._logger.name == self.logger_name:
-            return self._logger
-
-        from pyvotune.log import create_logger
-        self._logger = rv = create_logger(self)
-        return rv
