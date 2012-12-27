@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
+
 import inspyred
 import pyvotune
 import sys
+import re
 
 import random
 
@@ -26,7 +29,7 @@ class mass:
 @pyvotune.input_type("operator")
 @pyvotune.output_type("scalar")
 @pyvotune.terminal
-@pyvotune.float(range=(-100000000, 100000000))
+@pyvotune.pfloat(range=(-100000000, 100000000))
 class someconst:
     def __init__(self, c):
         self.c = c
@@ -51,41 +54,59 @@ def generator(random, args):
     gen = args['pyvotune_generator']
 
     return gen.generate()
-    #res = genome.assemble()
-    #print "Result of assembly", res
-    #individual = genome.assembled
-    #print individual
-
-    #pass
 
 
 @inspyred.ec.evaluators.evaluator
 def evaluator(candidate, args):
-    if not candidate.assemble():
+    equation = eq(candidate)
+    if not equation:
         #print "Invalidate candidate", candidate
         return sys.maxint
-
-    print "Validate candidate", candidate
-
-    individual = candidate.assembled
-    loader = individual[0]
-    loader.set_equation(individual[1:])
 
     total_err = 0
 
     for i in range(100):
         val = random.uniform(-100000, 100000)
 
-        target = val * (299792458 ** 2)
-        observed = loader(val)
+        target = actual(val)
+        observed = equation(val)
 
         err = abs(target - observed)
 
         total_err += err
 
-    print "Evaluating", loader, "=", total_err
+    #print "Evaluating", loader, "=", total_err
 
     return total_err
+
+
+def actual(val):
+    return val * (299792458 ** 2)
+
+
+def eq(candidate):
+    if not candidate.assemble():
+        return
+
+    #print "Validate candidate", candidate
+
+    individual = candidate.assembled
+    loader = individual[0]
+    loader.set_equation(individual[1:])
+
+    return loader
+
+
+def comma_me(amount):
+    if not isinstance(amount, basestring):
+        amount = '{0:f}'.format(amount)
+    orig = amount
+    new = re.sub("^(-?\d+)(\d{3})", '\g<1>,\g<2>', amount)
+    if orig == new:
+        return new
+    else:
+        return comma_me(new)
+
 
 if __name__ == '__main__':
     pyvotune.set_debug(False)
@@ -95,13 +116,14 @@ if __name__ == '__main__':
         max_length=10,
         noop_frequency=0.2)
 
-    #loader = individual[0]
-    #loader.set_equation(individual[1:])
-    #print loader(5)
-
     ea = inspyred.ec.GA(random.Random())
     ea.terminator = inspyred.ec.terminators.time_termination
     ea.observer = inspyred.ec.observers.stats_observer
+
+    ea.variator = [
+        pyvotune.variators.param_reset_mutation,
+        pyvotune.variators.n_point_crossover
+    ]
     #ea.logger = pyvotune.log.logger()
 
     final_pop = ea.evolve(
@@ -112,12 +134,20 @@ if __name__ == '__main__':
         max_time=15,
         pop_size=100,
         maximize=False,
-        num_elites=2)
+        num_elites=5)
 
     best = max(final_pop)
-    candidate = best.candidate
-    candidate.assemble()
-    best_loader = candidate.assembled[0]
-    best_loader.set_equation(candidate.assembled[1:])
-    print "Best Solution:", best_loader
+    best_eq = eq(best.candidate)
+    print "Best Solution:", best_eq
     print "Fitness", best.fitness
+    print ""
+
+    for i in range(100):
+        #val = random.uniform(-100000, 100000)
+        val = i
+
+        target = actual(val)
+        observed = best_eq(val)
+
+        err = abs(target - observed)
+        print i, comma_me(target), comma_me(observed), comma_me(err)

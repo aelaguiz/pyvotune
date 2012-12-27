@@ -29,8 +29,8 @@ class TestParamDecorators(unittest.TestCase):
         self.assertEqual(T1._pyvotune_params[0].check(None), "someval")
         self.assertEqual(T1._pyvotune_params[0].generate(), "someval2")
 
-    def test_int(self):
-        @pyvotune.int(
+    def test_pint(self):
+        @pyvotune.pint(
             range=(0, 5))
         class T2:
             def __init__(self, p1):
@@ -44,8 +44,8 @@ class TestParamDecorators(unittest.TestCase):
                 T2._pyvotune_params[0].check(
                     T2._pyvotune_params[0].generate()))
 
-    def test_int_choice(self):
-        @pyvotune.int(
+    def test_pint_choice(self):
+        @pyvotune.pint(
             range=(0, 5),
             choices=[0, 1])
         class T3:
@@ -59,8 +59,8 @@ class TestParamDecorators(unittest.TestCase):
             self.assertTrue(
                 T3._pyvotune_params[0].generate() in [0, 1])
 
-    def test_bool(self):
-        @pyvotune.bool()
+    def test_pbool(self):
+        @pyvotune.pbool()
         class T4:
             def __init__(self, p1):
                 pass
@@ -74,8 +74,8 @@ class TestParamDecorators(unittest.TestCase):
                 T4._pyvotune_params[0].check(
                     T4._pyvotune_params[0].generate()))
 
-    def test_float(self):
-        @pyvotune.float(
+    def test_pfloat(self):
+        @pyvotune.pfloat(
             range=(-23.3, 73.2))
         class T5:
             def __init__(self, p1):
@@ -89,7 +89,7 @@ class TestParamDecorators(unittest.TestCase):
                 T5._pyvotune_params[0].check(
                     T5._pyvotune_params[0].generate()))
 
-    def test_int_choice(self):
+    def test_pint_choice(self):
         @pyvotune.choice(
             choices=[0, 1, 3, 10])
         class T6:

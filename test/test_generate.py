@@ -8,9 +8,9 @@ from pyvotune.pyvotune_globals import *
 
 @pyvotune.empty_input
 @pyvotune.sparse_output
-@pyvotune.int(
+@pyvotune.pint(
     range=(0, 5))
-@pyvotune.bool()
+@pyvotune.pbool()
 class G1:
     def __init__(self, ival, bval):
         self.ival = ival
@@ -18,7 +18,7 @@ class G1:
 
 
 @pyvotune.sparse_input
-@pyvotune.float(range=(-3, 72))
+@pyvotune.pfloat(range=(-3, 72))
 @pyvotune.terminal
 class G2:
     def __init__(self, fval):
@@ -117,7 +117,7 @@ class TestGenerate(unittest.TestCase):
             return g
 
         @pyvotune.sparse_input
-        @pyvotune.float(range=(-3, 72))
+        @pyvotune.pfloat(range=(-3, 72))
         @pyvotune.factory(make_g3)
         class G3:
             def __init__(self):

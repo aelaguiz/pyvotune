@@ -75,6 +75,23 @@ class Genome(list):
         """
         Actual work function that validates with optional assembly step
         """
+        to_assemble = self.group_genes()
+
+        if to_assemble is False:
+            return False
+
+        if assemble:
+            self.assembled = [
+                self.construct_gene(g, p, v) for g, p, v in to_assemble]
+
+            log.debug(
+                u"G{0}: Assembled successfully".format(self.genome_id))
+        return True
+
+    def group_genes(self):
+        """
+        Returns a list containing genes and the matching parameter values
+        """
         to_assemble = []
 
         # Split out into params and genes
@@ -117,18 +134,12 @@ class Genome(list):
 
                     return False
 
-            to_assemble.append((gene, gene_param_vals))
+            to_assemble.append((gene, gene_params, gene_param_vals))
             self.state.gene_update(gene)
 
-        if assemble:
-            self.assembled = [
-                self.construct_gene(g, p) for g, p in to_assemble]
+        return to_assemble
 
-            log.debug(
-                u"G{0}: Assembled successfully".format(self.genome_id))
-        return True
-
-    def construct_gene(self, gene, param_vals):
+    def construct_gene(self, gene, gene_params, param_vals):
         """
         Returns an instantiated gene given the values to pass to it's constructor/factory meth
         """

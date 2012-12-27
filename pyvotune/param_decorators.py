@@ -51,10 +51,10 @@ class choice(param):
             rng)
 
 
-class int(param):
+class pint(param):
     """
-    @pyvotune.int(range=(0, 5))
-    @pyvotune.int(range=(0, 5), choices=[-2, 0, 7, 10]), rng=random
+    @pyvotune.pint(range=(0, 5))
+    @pyvotune.pint(range=(0, 5), choices=[-2, 0, 7, 10]), rng=random
     """
     def __init__(
             self, range, choices=None, rng=random):
@@ -78,10 +78,10 @@ class int(param):
             rng)
 
 
-class float(param):
+class pfloat(param):
     """
-    @pyvotune.float(range=(0, 5.))
-    @pyvotune.float(range=(0, 5.), rng=random
+    @pyvotune.pfloat(range=(0, 5.))
+    @pyvotune.pfloat(range=(0, 5.), rng=random
     """
     def __init__(
             self, range, rng=random):
@@ -99,10 +99,10 @@ class float(param):
             rng)
 
 
-class bool(param):
+class pbool(param):
     """
-    @pyvotune.bool()
-    @pyvotune.bool(rng=random)
+    @pyvotune.pbool()
+    @pyvotune.pbool(rng=random)
     """
     def __init__(
             self, rng=random):
