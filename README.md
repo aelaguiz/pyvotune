@@ -80,37 +80,43 @@ This example uses the [Boston Housing Dataset](http://archive.ics.uci.edu/ml/dat
 
     Generation Evaluation      Worst       Best     Median    Average    Std Dev
     ---------- ---------- ---------- ---------- ---------- ---------- ----------
-            10        550          0      98.21        0.0    36.6346 46.8393266
+             6        350      85.64      99.11      98.21    97.6118 2.68660431
 
                  precision    recall  f1-score   support
 
-              0       1.00      1.00      1.00        19
-              1       0.95      0.95      0.95        19
-              2       1.00      1.00      1.00        19
-              3       1.00      1.00      1.00        25
-              4       1.00      0.94      0.97        16
-              5       0.89      1.00      0.94        16
-              6       1.00      0.95      0.97        20
-              7       0.97      1.00      0.98        31
-              8       1.00      0.97      0.99        36
-              9       1.00      1.00      1.00        24
+              0       1.00      1.00      1.00        29
+              1       0.94      1.00      0.97        17
+              2       1.00      1.00      1.00        32
+              3       1.00      1.00      1.00        23
+              4       1.00      1.00      1.00        23
+              5       1.00      0.90      0.95        20
+              6       1.00      1.00      1.00        19
+              7       1.00      0.95      0.98        21
+              8       1.00      0.96      0.98        24
+              9       0.85      1.00      0.92        17
 
     avg / total       0.98      0.98      0.98       225
 
-    Fitness: 98.21
-    Genome: VlQ5c
-    	Gene 0: ExtraTreesClassifier
-    		Param 0: criterion: choice - entropy
-    		Param 1: n_estimators: int - 291
-    		Param 2: min_density: float - 0.582296870215
-    		Param 3: n_jobs: const - 1
-    		Param 4: bootstrap: bool - False
-    		Param 5: oob_score: bool - False
+    Fitness: 99.11
+    Genome: 2NWYgK
+    	Gene 0: Normalizer
+    		Param 0: norm: choice - l1
+    	Gene 1: PCA
+    		Param 0: whiten: bool - False
+    	Gene 2: PCA
+    		Param 0: whiten: bool - False
+    	Gene 3: SVC
+    		Param 0: C: float - 382.493666708
+    		Param 1: kernel: choice - linear
+    		Param 2: degree: int - 3
+    		Param 3: gamma: float - 74.2633913798
+    		Param 4: coef0: float - 7528.0708478
+    		Param 5: shrinking: bool - True
 
 
-    real	5m46.102s
+    real	7m0.304s
 
-We use
+Using the sklearn digit recognition dataset we evolve a classifier pipeline.
 
 * * *
 
