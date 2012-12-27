@@ -11,3 +11,7 @@ from pyvotune.log import set_debug
 
 import pyvotune.variators
 import pyvotune.evaluators
+
+__version__ = '0.0.1'
+__author__ = 'Amir Elaguizy'
+__email__ = 'aelaguiz@gmail.com'

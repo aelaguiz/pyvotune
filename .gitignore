@@ -1,3 +1,8 @@
 *.pyc
 *.vim
 venv
+*.so
+*.py[oc]
+*.egg-info
+dist
+build

@@ -80,9 +80,7 @@ class TestGenerate(unittest.TestCase):
 
         for i in range(10):
             genome2 = gen.generate()
-            self.assertEqual(len(genome2), 2)
-            self.assertEqual(genome2[0][1], NOOP_GENE)
-            self.assertEqual(genome2[1][1], NOOP_GENE)
+            self.assertFalse(genome2)
 
     def test_params(self):
         gen = pyvotune.Generate(
