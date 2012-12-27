@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import pyvotune
 from sklearn.decomposition import PCA, ProbabilisticPCA, ProjectedGradientNMF
 
@@ -22,9 +23,9 @@ def get_decomposers(n_features):
     pyvotune.pfloat(
         range=(0.01, 10), name='eta')(ProjectedGradientNMF)
     pyvotune.pint(
-        range=(1, 1000), name='max_iter')(ProjectedGradientNMF)
+        range=(1, 600), name='max_iter')(ProjectedGradientNMF)
     pyvotune.pint(
-        range=(100, 10000), name='nls_max_iter')(ProjectedGradientNMF)
+        range=(100, 4000), name='nls_max_iter')(ProjectedGradientNMF)
 
     # PCA & ProbabilisticPCA are initialized together since ProbabilisticPCA
     # wraps PCA

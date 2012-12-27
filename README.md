@@ -41,54 +41,76 @@ This *very* contrived example essentially is guessing at the speed of light. Wha
 
     $ time python samples/boston/main.py
     
+    …
+    
     Generation Evaluation      Worst       Best     Median    Average    Std Dev
     ---------- ---------- ---------- ---------- ---------- ---------- ----------
-             0        100        inf 7.34668954 41.3256808        inf        nan
-         
-    Generation Evaluation      Worst       Best     Median    Average    Std Dev
-    ---------- ---------- ---------- ---------- ---------- ---------- ----------
-             1        200 224.844920 7.34668954 30.1042747 35.5401870 35.4997440
-         
-    Generation Evaluation      Worst       Best     Median    Average    Std Dev
-    ---------- ---------- ---------- ---------- ---------- ---------- ----------
-             2        300 54.5085468 7.30813494 12.2143726 19.1619154 13.1476481
-         
-    Generation Evaluation      Worst       Best     Median    Average    Std Dev
-    ---------- ---------- ---------- ---------- ---------- ---------- ----------
-             3        400 30.9871428 7.07872928 8.71327343 9.90077064 3.32779459
-
-    Generation Evaluation      Worst       Best     Median    Average    Std Dev
-    ---------- ---------- ---------- ---------- ---------- ---------- ----------
-             4        500 11.2183600 7.07872928 7.78732169 8.27628039 1.15729929
-
-    Generation Evaluation      Worst       Best     Median    Average    Std Dev
-    ---------- ---------- ---------- ---------- ---------- ---------- ----------
-             5        600 11.3144702 7.07872928 7.74535805 7.96155504 0.86525738
+            24       1250 11.0346785 4.53306810 6.46303394 6.57444884 1.26032606
 
       # Actual Observed Err %
     --- ------ -------- -----
-    000 29.8   29.1333333333 2.24
-    001 12.6   15.4272727273 22.44
-    002 24.4   22.6060606061 7.35
-    003 19.8   21.5636363636 8.91
-    004 24.4   24.1787878788 0.91
-    005 32.0   26.9909090909 15.65
-    006 33.1   30.8757575758 6.72
-    007 12.0   15.1515151515 26.26
-    008 19.1   22.1515151515 15.98
-    009 16.2   16.2151515152 0.09
-    MSE: 13.1558693469
-    Avg Err %: 9.28
-    Genome: 9n1yF7
-    	Gene 0: RandomForestRegressor
-	    	Param 0: n_estimators: int - 33
-		    Param 1: min_density: float - 0.590620781629
-    		Param 2: n_jobs: const - 1
-    		Param 3: bootstrap: bool - True
-    		
-    real	7m4.479s
+    000 34.9   30.1370242847 13.65
+    001 30.8   30.6372567011 0.53
+    002 17.3   15.8452022367 8.41
+    003 45.4   47.5934588348 4.83
+    004 23.6   25.347864608 7.41
+    005 33.1   33.1862479121 0.26
+    006 10.4   15.9982080446 53.83
+    007 17.4   22.1055749735 27.04
+    008 23.3   21.6639578698 7.02
+    009 20.6   22.1880883774 7.71
+    MSE: 7.72680473303
+    Avg Err %: 9.32
+    Genome: 6KMfc5
+    	Gene 0: Scaler
+    		Param 0: with_std: bool - True
+    	Gene 1: GradientBoostingRegressor
+    		Param 0: n_estimators: int - 241
+    		Param 1: max_features: int - 7
+    		Param 2: learning_rate: float - 0.182539777357
+    		Param 3: subsample: float - 0.708019800365
 
-This example uses the [Boston Housing Dataset](http://archive.ics.uci.edu/ml/datasets/Housing) to show how PyEvoTune can be used with sklearn to optimize pipelines. The real triumph here is the implementation cost and how little understanding we or the algorithm have in the problem domain. Allowing the algorithm to run longer would presumably generate more accurate results.
+
+    real	5m35.501s
+
+This example uses the [Boston Housing Dataset](http://archive.ics.uci.edu/ml/datasets/Housing) to show how PyvoTune can be used with sklearn to optimize pipelines. The real triumph here is the implementation cost and how little understanding we or the algorithm have in the problem domain. Allowing the algorithm to run longer would presumably generate more accurate results.
+
+
+### Digit Recognition Classification
+
+    Generation Evaluation      Worst       Best     Median    Average    Std Dev
+    ---------- ---------- ---------- ---------- ---------- ---------- ----------
+            10        550          0      98.21        0.0    36.6346 46.8393266
+
+                 precision    recall  f1-score   support
+
+              0       1.00      1.00      1.00        19
+              1       0.95      0.95      0.95        19
+              2       1.00      1.00      1.00        19
+              3       1.00      1.00      1.00        25
+              4       1.00      0.94      0.97        16
+              5       0.89      1.00      0.94        16
+              6       1.00      0.95      0.97        20
+              7       0.97      1.00      0.98        31
+              8       1.00      0.97      0.99        36
+              9       1.00      1.00      1.00        24
+
+    avg / total       0.98      0.98      0.98       225
+
+    Fitness: 98.21
+    Genome: VlQ5c
+    	Gene 0: ExtraTreesClassifier
+    		Param 0: criterion: choice - entropy
+    		Param 1: n_estimators: int - 291
+    		Param 2: min_density: float - 0.582296870215
+    		Param 3: n_jobs: const - 1
+    		Param 4: bootstrap: bool - False
+    		Param 5: oob_score: bool - False
+
+
+    real	5m46.102s
+
+We use
 
 * * *
 

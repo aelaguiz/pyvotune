@@ -30,14 +30,14 @@ def evaluator(candidate, args):
             candidate, args['train_X'], args['train_y'])
 
         if not individual:
-            return sys.maxint
+            return 0
 
         return test_individual(
             individual, args['test_X'], args['test_y'])
     except Exception as e:
         print "Exception:", e
         print candidate
-        return sys.maxint
+        return 0
 
 
 def train_candidate(candidate, train_X, train_y):
@@ -55,27 +55,12 @@ def train_candidate(candidate, train_X, train_y):
 def test_individual(pipeline, test_X, test_y, display=False):
     observed_y = pipeline.predict(test_X)
 
-    mse = sklearn.metrics.mean_squared_error(
-        test_y, observed_y)
+    f1 = sklearn.metrics.f1_score(test_y, observed_y)
 
     if display:
-        total_err = 0
-        total_actual = 0
-        print "  #", "Actual", "Observed", "Err %"
-        print "---", "------", "--------", "-----"
-        for i, (actual, observed) in enumerate(
-                random.sample(zip(test_y, observed_y), 10)):
-            err = abs(observed - actual)
-            err_pct = round(err / actual * 100., 2)
+        print sklearn.metrics.classification_report(test_y, observed_y)
 
-            total_err += err
-            total_actual += actual
-
-            print str(i).zfill(3), str(actual).ljust(6), str(observed).ljust(8), str(err_pct).ljust(4)
-        print "MSE:", mse
-        print "Avg Err %:", round(total_err / total_actual * 100., 2)
-
-    return mse
+    return round(f1 * 100., 2)
 
 
 if __name__ == '__main__':
@@ -84,14 +69,20 @@ if __name__ == '__main__':
     ############################
     # Load the initial dataset #
     ############################
-    data = sklearn.datasets.load_boston()
+    data = sklearn.datasets.load_digits()
     X = data['data']
     y = data['target']
+
+    print X.shape
 
     # Split the dataset into training, testing and then validation parts
     train_X, temp_X, train_y, temp_y = train_test_split(X, y, test_size=0.25)
     test_X, validate_X, test_y, validate_y = train_test_split(
         temp_X, temp_y, test_size=0.5)
+
+    print "Training", train_X.shape
+    print "Testing", test_X.shape
+    print "Validation", validate_X.shape
 
     n_features = X.shape[1]
 
@@ -102,8 +93,9 @@ if __name__ == '__main__':
         initial_state={
             'sparse': False
         },
-        gene_pool=pyvotune.sklearn.get_regressors(n_features) +
+        gene_pool=pyvotune.sklearn.get_classifiers(n_features) +
         pyvotune.sklearn.get_decomposers(n_features) +
+        pyvotune.sklearn.get_image_features(n_features) +
         pyvotune.sklearn.get_preprocessors(n_features),
         max_length=4,
         noop_frequency=0.2)
@@ -114,7 +106,7 @@ if __name__ == '__main__':
     ea = inspyred.ec.GA(random.Random())
     ea.terminator = [
         inspyred.ec.terminators.time_termination,
-        inspyred.ec.terminators.average_fitness_termination
+        #inspyred.ec.terminators.average_fitness_termination
     ]
 
     ea.observer = inspyred.ec.observers.stats_observer
@@ -133,8 +125,9 @@ if __name__ == '__main__':
         pyvotune_generator=gen,
 
         mp_evaluator=evaluator,
-        mp_timeout=30,
-        mp_timeout_return=sys.maxint,
+        mp_ncpus=12,
+        mp_timeout=60,
+        mp_timeout_return=0,
 
         tolerance=0.25,
         max_time=300,
@@ -145,7 +138,7 @@ if __name__ == '__main__':
         test_y=test_y,
 
         pop_size=50,
-        maximize=False,
+        maximize=True,
         num_elites=5)
 
     ####################
@@ -156,3 +149,4 @@ if __name__ == '__main__':
     test_individual(pipeline, validate_X, validate_y, display=True)
     print "Fitness:", best.fitness
     print best.candidate
+

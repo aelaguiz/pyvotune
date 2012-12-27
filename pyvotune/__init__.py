@@ -10,3 +10,4 @@ from pyvotune.genome import Genome
 from pyvotune.log import set_debug
 
 import pyvotune.variators
+import pyvotune.evaluators
