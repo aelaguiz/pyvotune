@@ -145,7 +145,11 @@ if __name__ == '__main__':
         noop_frequency=0.2)
 
     ea = inspyred.ec.GA(random.Random())
-    ea.terminator = inspyred.ec.terminators.time_termination
+    ea.terminator = [
+        inspyred.ec.terminators.time_termination,
+        inspyred.ec.terminators.average_fitness_termination
+    ]
+
     ea.observer = inspyred.ec.observers.stats_observer
 
     ea.variator = [
@@ -159,7 +163,9 @@ if __name__ == '__main__':
         evaluator=evaluator,
         pyvotune_generator=gen,
 
-        max_time=15,
+        tolerance=0.25,
+        max_time=300,
+
         pop_size=200,
         maximize=False,
         num_elites=5)

@@ -46,13 +46,38 @@ def n_point_crossover(random, mom, dad, args):
     - *num_crossover_points* -- the number of crossover points used (default 1)
 
     """
+    rate = args.setdefault('mutation_rate', 0.1)
+    mutant = pyvotune.Genome(get_id())
+    grouped_genes = candidate.group_genes()
+
+    for gene, gene_param, param_values in grouped_genes:
+        new_values = []
+        for param, value in zip(gene_param, param_values):
+            if random.random() < rate:
+                new_values.append(param.generate())
+            else:
+                new_values.append(value)
+
+        mutant.add_gene(new_values, gene)
+
+    return mutant
+
     crossover_rate = args.setdefault('crossover_rate', 1.0)
     num_crossover_points = args.setdefault('num_crossover_points', 1)
     children = []
     if random.random() < crossover_rate:
+        mom = mom.group_genes()
+        dad = dad.group_genes()
+        bro = copy.copy(dad)
+        sis = copy.copy(mom)
+
         num_cuts = min(len(mom) - 1, num_crossover_points)
+
         cut_points = random.sample(range(1, len(mom)), num_cuts)
+
         cut_points.sort()
+
+
         bro = copy.copy(dad)
         sis = copy.copy(mom)
         normal = True
