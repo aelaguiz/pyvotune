@@ -3,14 +3,21 @@
 
 class Param:
     def __init__(
-        self, checker_fn, checker_args, generator_fn,
+        self, typename, checker_fn, checker_args, generator_fn,
             generator_args, rng, name):
         self.checker_fn = checker_fn
         self.checker_args = checker_args
         self.generator_fn = generator_fn
         self.generator_args = generator_args
         self.rng = rng
+        self.typename = typename
         self.name = name
+
+    def __repr__(self):
+        if self.name:
+            return "%s: %s" % (self.name, self.typename)
+        else:
+            return self.typename
 
     def generate(self):
         """

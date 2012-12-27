@@ -13,6 +13,7 @@ class TestParamDecorators(unittest.TestCase):
             return arg2
 
         @pyvotune.param(
+            typename="custom type",
             checker_fn=checker_fn,
             checker_args={
                 'arg1': "someval"

@@ -55,10 +55,11 @@ class Genome(list):
         """
         try:
             return self._assemble(assemble=False)
-        except:
-            log.exception(
-                u"G{0}: Assembly hard excepted, failing".format(
-                    self.genome_id))
+        except Exception as e:
+            log.error(e)
+            log.error(
+                u"G{0}: Assembly hard excepted, failing {1}".format(
+                    self.genome_id, self))
             return False
 
     def assemble(self):
@@ -68,10 +69,11 @@ class Genome(list):
         """
         try:
             return self._assemble()
-        except:
-            log.exception(
-                u"G{0}: Assembly hard excepted, failing".format(
-                    self.genome_id))
+        except Exception as e:
+            log.error(e)
+            log.error(
+                u"G{0}: Assembly hard excepted, failing {1}".format(
+                    self.genome_id, self))
             return False
 
     def _assemble(self, assemble=True):
@@ -102,6 +104,11 @@ class Genome(list):
         active_genes = [g for t, g in self if t == 'gene' and g != NOOP_GENE]
         num_active = len(active_genes)
 
+        if 0 == num_active:
+            log.debug(u"G{0}: Invalid - contains no active genes".format(
+                self.genome_id))
+            return False
+
         self.state.clear()
 
         for i, gene in enumerate(active_genes):
@@ -113,6 +120,12 @@ class Genome(list):
             if not self.does_gene_fit(gene):
                 log.debug(
                     u"G{0}: Invalid - Gene does not fit in current state {1} {2}".format(
+                        self.genome_id, gene, self.state))
+                return False
+
+            if not self.state.is_gene_placement_valid(gene):
+                log.debug(
+                    u"G{0}: Invalid - Gene does not have correct placement {1} {2}".format(
                         self.genome_id, gene, self.state))
                 return False
 
@@ -157,6 +170,19 @@ class Genome(list):
         unnamed_params = [v for p, v in zip(gene_params, param_vals) if p.name is None]
         named_params = {p.name: v for p, v in zip(gene_params, param_vals) if p.name}
         return cons(*unnamed_params, **named_params)
+
+    def __repr__(self):
+        grouped_genes = self.group_genes()
+
+        strval = "Genome: %s\n" % self.genome_id
+
+        for i, (gene, gene_params, gene_param_vals) in enumerate(grouped_genes):
+            strval += "\tGene %d: %s\n" % (i, gene.__name__)
+
+            for j, (param, val) in enumerate(zip(gene_params, gene_param_vals)):
+                strval += "\t\tParam %d: %s - %s\n" % (j, param, val)
+
+        return strval
 
     def get_gene_params(self, gene):
         if not hasattr(gene, '_pyvotune_params'):

@@ -36,6 +36,60 @@ PyvoTune is a work in progress, there has been no major release yet.
 
 This *very* contrived example essentially is guessing at the speed of light. What it is doing is generating an equation attempting to approximate E=mc^2.
 
+### Boston Home Price Regression
+
+
+    $ time python samples/boston/main.py
+    
+    Generation Evaluation      Worst       Best     Median    Average    Std Dev
+    ---------- ---------- ---------- ---------- ---------- ---------- ----------
+             0        100        inf 7.34668954 41.3256808        inf        nan
+         
+    Generation Evaluation      Worst       Best     Median    Average    Std Dev
+    ---------- ---------- ---------- ---------- ---------- ---------- ----------
+             1        200 224.844920 7.34668954 30.1042747 35.5401870 35.4997440
+         
+    Generation Evaluation      Worst       Best     Median    Average    Std Dev
+    ---------- ---------- ---------- ---------- ---------- ---------- ----------
+             2        300 54.5085468 7.30813494 12.2143726 19.1619154 13.1476481
+         
+    Generation Evaluation      Worst       Best     Median    Average    Std Dev
+    ---------- ---------- ---------- ---------- ---------- ---------- ----------
+             3        400 30.9871428 7.07872928 8.71327343 9.90077064 3.32779459
+
+    Generation Evaluation      Worst       Best     Median    Average    Std Dev
+    ---------- ---------- ---------- ---------- ---------- ---------- ----------
+             4        500 11.2183600 7.07872928 7.78732169 8.27628039 1.15729929
+
+    Generation Evaluation      Worst       Best     Median    Average    Std Dev
+    ---------- ---------- ---------- ---------- ---------- ---------- ----------
+             5        600 11.3144702 7.07872928 7.74535805 7.96155504 0.86525738
+
+      # Actual Observed Err %
+    --- ------ -------- -----
+    000 29.8   29.1333333333 2.24
+    001 12.6   15.4272727273 22.44
+    002 24.4   22.6060606061 7.35
+    003 19.8   21.5636363636 8.91
+    004 24.4   24.1787878788 0.91
+    005 32.0   26.9909090909 15.65
+    006 33.1   30.8757575758 6.72
+    007 12.0   15.1515151515 26.26
+    008 19.1   22.1515151515 15.98
+    009 16.2   16.2151515152 0.09
+    MSE: 13.1558693469
+    Avg Err %: 9.28
+    Genome: 9n1yF7
+    	Gene 0: RandomForestRegressor
+	    	Param 0: n_estimators: int - 33
+		    Param 1: min_density: float - 0.590620781629
+    		Param 2: n_jobs: const - 1
+    		Param 3: bootstrap: bool - True
+    		
+    real	7m4.479s
+
+This example uses the [Boston Housing Dataset](http://archive.ics.uci.edu/ml/datasets/Housing) to show how PyEvoTune can be used with sklearn to optimize pipelines. The real triumph here is the implementation cost and how little understanding we or the algorithm have in the problem domain. Allowing the algorithm to run longer would presumably generate more accurate results.
+
 * * *
 
 ### License

@@ -78,21 +78,21 @@ def non_terminal(cls):
     """
     This gene is NOT valid as the last gene in a genome
     """
-    return add_property(cls, 'input', 'last', False)
+    return add_property(cls, 'position', 'last', False)
 
 
 def terminal(cls):
     """
     This gene is valid as the last gene in a genome
     """
-    return add_property(cls, 'input', 'last', [True, False])
+    return add_property(cls, 'position', 'last', [True, False])
 
 
 def excl_terminal(cls):
     """
     This gene is ONLY valid as the last gene in a genome
     """
-    return add_property(cls, 'input', 'last', True)
+    return add_property(cls, 'position', 'last', True)
 
 
 def empty_input(cls):
@@ -134,11 +134,7 @@ def add_property(cls, direction, name, value):
         cls._pyvotune['input']['empty'] = [True, False]
 
         # Ensure that genes have to get their terminal status explicitely set
-        cls._pyvotune['input']['last'] = False
-
-        # Ensure that the sparse state has to explicitly be set to be registered
-        # as sparse
-        #cls._pyvotune['input']['sparse'] = False
+        cls._pyvotune['position']['last'] = False
 
     cls._pyvotune[direction][name] = value
     return cls

@@ -19,6 +19,7 @@ class param(object):
     """
     General form:
         @pyvotune.param(
+            typename="name",
             checker_fn=<checker_fn>,
             checker_args=<checker arguments dict>
             generator_fn=<generator_fn>,
@@ -26,10 +27,10 @@ class param(object):
             rng=random)
     """
     def __init__(
-            self, checker_fn, checker_args, generator_fn, generator_args,
+            self, typename, checker_fn, checker_args, generator_fn, generator_args,
             rng=random, name=None):
         self.param = Param(
-            checker_fn, checker_args, generator_fn, generator_args, rng, name)
+            typename, checker_fn, checker_args, generator_fn, generator_args, rng, name)
 
     def __call__(self, cls):
         return add_param(cls, self.param)
@@ -43,7 +44,7 @@ class choice(param):
             self, choices, rng=random, name=None):
 
         param.__init__(
-            self, choice_checker, {
+            self, "choice", choice_checker, {
                 'choices': set(choices)
             }, choice_generator, {
                 'choices': list(choices)
@@ -74,7 +75,7 @@ class pint(param):
             }
 
         param.__init__(
-            self, range_checker, checker_args, generator_fn, generator_args,
+            self, "int", range_checker, checker_args, generator_fn, generator_args,
             rng, name)
 
 
@@ -95,7 +96,7 @@ class pfloat(param):
         generator_args = checker_args
 
         param.__init__(
-            self, range_checker, checker_args, generator_fn, generator_args,
+            self, "float", range_checker, checker_args, generator_fn, generator_args,
             rng, name)
 
 
@@ -107,7 +108,7 @@ class pconst(param):
             self, value, name=None):
 
         param.__init__(
-            self, const_checker, {
+            self, "const", const_checker, {
                 'const_value': value
             }, const_generator, {
                 'const_value': value
@@ -123,7 +124,7 @@ class pbool(param):
             self, rng=random, name=None):
 
         param.__init__(
-            self, noop_checker, None, bool_generator, None, rng, name)
+            self, "bool", noop_checker, None, bool_generator, None, rng, name)
 
 
 def add_param(cls, param):

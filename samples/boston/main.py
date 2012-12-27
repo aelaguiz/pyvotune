@@ -1,53 +1,43 @@
+# -*- coding: utf-8 -*-
+
 import inspyred
 import pyvotune
+import pyvotune.sklearn
 import random
 import sys
 
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.neighbors import KNeighborsRegressor
 from sklearn.cross_validation import train_test_split
 from sklearn.pipeline import Pipeline
 import sklearn.datasets
-
-pyvotune.dense_input(RandomForestRegressor)
-pyvotune.terminal(RandomForestRegressor)
-pyvotune.pint(range=(1, 1000), name='n_estimators')(RandomForestRegressor)
-pyvotune.pfloat(range=(0, 1), name='min_density')(RandomForestRegressor)
-pyvotune.pconst(value=1, name='n_jobs')(RandomForestRegressor)
-pyvotune.pbool(name='bootstrap')(RandomForestRegressor)
-
-pyvotune.dense_input(GradientBoostingRegressor)
-pyvotune.terminal(GradientBoostingRegressor)
-pyvotune.pint(range=(10, 5000), name='n_estimators')(GradientBoostingRegressor)
-pyvotune.pint(range=(1, 13), name='max_features')(GradientBoostingRegressor)
-pyvotune.pfloat(range=(0, 1), name='learning_rate')(GradientBoostingRegressor)
-pyvotune.pfloat(range=(0, 1), name='subsample')(GradientBoostingRegressor)
-
-pyvotune.dense_input(KNeighborsRegressor)
-pyvotune.terminal(KNeighborsRegressor)
-pyvotune.pint(range=(2, 100), name='n_neighbors')(KNeighborsRegressor)
-pyvotune.choice(choices=['uniform', 'distance'], name='weights')(KNeighborsRegressor)
-pyvotune.choice(choices=['auto', 'ball_tree', 'kd_tree', 'brute'], name='algorithm')(KNeighborsRegressor)
-pyvotune.pint(range=(10, 100), name='leaf_size')(KNeighborsRegressor)
-pyvotune.pint(range=(1, 20), name='p')(KNeighborsRegressor)
 
 
 def generator(random, args):
     gen = args['pyvotune_generator']
 
-    return gen.generate()
+    genome = gen.generate(max_retries=50)
+
+    if not genome:
+        print "ERROR: Failed to generate a genome after 50 tries"
+        sys.exit(0)
+
+    return genome
 
 
 @inspyred.ec.evaluators.evaluator
 def evaluator(candidate, args):
-    individual = train_candidate(
-        candidate, args['train_X'], args['train_y'])
+    try:
+        individual = train_candidate(
+            candidate, args['train_X'], args['train_y'])
 
-    if not individual:
+        if not individual:
+            return sys.maxint
+
+        return test_individual(
+            individual, args['test_X'], args['test_y'])
+    except Exception as e:
+        print "Exception:", e
+        print candidate
         return sys.maxint
-
-    return test_individual(
-        individual, args['test_X'], args['test_y'])
 
 
 def train_candidate(candidate, train_X, train_y):
@@ -73,7 +63,8 @@ def test_individual(pipeline, test_X, test_y, display=False):
         total_actual = 0
         print "  #", "Actual", "Observed", "Err %"
         print "---", "------", "--------", "-----"
-        for i, (actual, observed) in enumerate(zip(test_y, observed_y)):
+        for i, (actual, observed) in enumerate(
+                random.sample(zip(test_y, observed_y), 10)):
             err = abs(observed - actual)
             err_pct = round(err / actual * 100., 2)
 
@@ -94,25 +85,28 @@ if __name__ == '__main__':
     X = data['data']
     y = data['target']
 
-    train_X, temp_X, train_y, temp_y = train_test_split(X, y, train_size=0.75)
-    test_X, validate_X, test_y, validate_y = train_test_split(temp_X, temp_y, train_size=0.5)
+    train_X, temp_X, train_y, temp_y = train_test_split(X, y, test_size=0.25)
+    test_X, validate_X, test_y, validate_y = train_test_split(
+        temp_X, temp_y, test_size=0.5)
 
+    print "Total dataset", len(X)
+    print "Training on", len(train_X)
+    print "Testing on", len(test_X)
+    print "Validating on", len(validate_X)
+
+    n_features = X.shape[1]
     gen = pyvotune.Generate(
         initial_state={
             'sparse': False
         },
-        gene_pool=[
-            GradientBoostingRegressor,
-            RandomForestRegressor,
-            KNeighborsRegressor],
-
-        max_length=1,
-        noop_frequency=0.0)
+        gene_pool=pyvotune.sklearn.get_regressors(n_features) + pyvotune.sklearn.get_decomposers(n_features),
+        max_length=4,
+        noop_frequency=0.2)
 
     ea = inspyred.ec.GA(random.Random())
     ea.terminator = [
         inspyred.ec.terminators.time_termination,
-        #inspyred.ec.terminators.average_fitness_termination
+        inspyred.ec.terminators.average_fitness_termination
     ]
 
     ea.observer = inspyred.ec.observers.stats_observer
@@ -122,7 +116,6 @@ if __name__ == '__main__':
         pyvotune.variators.scramble_mutation,
         pyvotune.variators.uniform_crossover
     ]
-    #ea.logger = pyvotune.log.logger()
 
     final_pop = ea.evolve(
         generator=generator,
@@ -130,23 +123,22 @@ if __name__ == '__main__':
         pyvotune_generator=gen,
 
         mp_evaluator=evaluator,
-        mp_nprocs=8,
+        mp_nprocs=12,
 
-        #tolerance=0.25,
-        max_time=10,
+        tolerance=0.25,
+        max_time=300,
 
         train_X=train_X,
         train_y=train_y,
         test_X=test_X,
         test_y=test_y,
 
-        pop_size=50,
+        pop_size=100,
         maximize=False,
         num_elites=5)
 
     best = max(final_pop)
 
-    print best.candidate
-
     pipeline = train_candidate(best.candidate, train_X, train_y)
     test_individual(pipeline, validate_X, validate_y, display=True)
+    print best.candidate
