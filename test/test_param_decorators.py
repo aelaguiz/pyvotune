@@ -102,3 +102,17 @@ class TestParamDecorators(unittest.TestCase):
         for i in range(15):
             self.assertTrue(
                 T6._pyvotune_params[0].generate() in [0, 1, 3, 10])
+
+    def test_named_params(self):
+        @pyvotune.pfloat(range=(-5, 0), name="p2")
+        @pyvotune.pint(range=(0, 5), name="p1")
+        class T7:
+            def __init__(self, p1, p2):
+                self.p1 = p1
+                self.p2 = p2
+
+        g = pyvotune.Genome("test")
+        t7 = g.construct_gene(T7, g.get_gene_params(T7), [-2.3, 3])
+
+        self.assertEqual(t7.p1, -2.3)
+        self.assertEqual(t7.p2, 3)

@@ -5,7 +5,11 @@ import inspyred
 import copy
 
 import pyvotune
+
+from pyvotune.log import logger
 from pyvotune.util.id_generator import get_id
+
+log = logger()
 
 
 def crossover(cross):
@@ -20,48 +24,17 @@ def crossover(cross):
             if children:
                 return children
 
+            log.debug(u"Crossing over failed between {0} and {1}".format(
+                mom, dad))
+
         return [mom, dad]
 
     return inspyred.ec.variators.crossovers.crossover(
         validating_crossover)
 
+
 @crossover
 def n_point_crossover(random, mom, dad, args):
-    """Return the offspring of n-point crossover on the candidates.
-
-    This function performs n-point crossover (NPX). It selects *n*
-    random points without replacement at which to 'cut' the candidate
-    solutions and recombine them.
-
-    .. Arguments:
-       random -- the random number generator object
-       mom -- the first parent candidate
-       dad -- the second parent candidate
-       args -- a dictionary of keyword arguments
-
-    Optional keyword arguments in args:
-
-    - *crossover_rate* -- the rate at which crossover is performed
-      (default 1.0)
-    - *num_crossover_points* -- the number of crossover points used (default 1)
-
-    """
-    rate = args.setdefault('mutation_rate', 0.1)
-    mutant = pyvotune.Genome(get_id())
-    grouped_genes = candidate.group_genes()
-
-    for gene, gene_param, param_values in grouped_genes:
-        new_values = []
-        for param, value in zip(gene_param, param_values):
-            if random.random() < rate:
-                new_values.append(param.generate())
-            else:
-                new_values.append(value)
-
-        mutant.add_gene(new_values, gene)
-
-    return mutant
-
     crossover_rate = args.setdefault('crossover_rate', 1.0)
     num_crossover_points = args.setdefault('num_crossover_points', 1)
     children = []
@@ -77,21 +50,47 @@ def n_point_crossover(random, mom, dad, args):
 
         cut_points.sort()
 
-
-        bro = copy.copy(dad)
-        sis = copy.copy(mom)
         normal = True
         for i, (m, d) in enumerate(zip(mom, dad)):
             if i in cut_points:
                 normal = not normal
+
             if not normal:
                 bro[i] = m
                 sis[i] = d
-        children.append(bro)
-        children.append(sis)
+
+        children.append(pyvotune.Genome(get_id(), init_parts=bro))
+        children.append(pyvotune.Genome(get_id(), init_parts=sis))
     else:
         children.append(mom)
         children.append(dad)
+
+    return children
+
+
+@crossover
+def uniform_crossover(random, mom, dad, args):
+    ux_bias = args.setdefault('ux_bias', 0.5)
+    crossover_rate = args.setdefault('crossover_rate', 1.0)
+
+    children = []
+    if random.random() < crossover_rate:
+        mom = mom.group_genes()
+        dad = dad.group_genes()
+        bro = copy.copy(dad)
+        sis = copy.copy(mom)
+
+        for i, (m, d) in enumerate(zip(mom, dad)):
+            if random.random() < ux_bias:
+                bro[i] = m
+                sis[i] = d
+
+        children.append(pyvotune.Genome(get_id(), init_parts=bro))
+        children.append(pyvotune.Genome(get_id(), init_parts=sis))
+    else:
+        children.append(mom)
+        children.append(dad)
+
     return children
 
 #"""

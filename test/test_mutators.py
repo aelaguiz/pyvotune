@@ -35,3 +35,29 @@ class TestMutators(unittest.TestCase):
             self.assertTrue(new_val >= 0 and new_val < 5)
 
         self.assertTrue(some_diff)
+
+    def test_scramble_mutation(self):
+        @pyvotune.pint(
+            range=(0, 5))
+        class P1:
+            def __init__(self, intparam):
+                self.intparam = intparam
+
+        g1 = pyvotune.Genome(get_id())
+        for i in range(5):
+            g1.add_gene([i], P1)
+        self.assertTrue(g1.assemble())
+
+        r = random.Random()
+
+        prev_val = g1[0][1]
+        some_diff = False
+        for i in range(10):
+            (g2,) = pyvotune.variators.scramble_mutation(
+                r, [g1], {'mutation_rate': 1.0})
+
+            for orig, new in zip(g1, g2):
+                if orig != new:
+                    some_diff = True
+
+        self.assertTrue(some_diff)

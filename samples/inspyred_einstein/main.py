@@ -154,6 +154,7 @@ if __name__ == '__main__':
 
     ea.variator = [
         pyvotune.variators.param_reset_mutation,
+        pyvotune.variators.scramble_mutation,
         pyvotune.variators.n_point_crossover
     ]
     #ea.logger = pyvotune.log.logger()

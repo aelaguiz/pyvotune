@@ -17,11 +17,13 @@ log = logger()
 
 
 class Genome(list):
-    def __init__(self, genome_id):
+    def __init__(self, genome_id, init_parts=[]):
         self.genome_id = genome_id
         self.state = AssemblyState()
 
         self.assembled = None
+
+        [self.add_gene(v, g) for g, p, v in init_parts]
 
         log.debug(
             u"G{0}: Instantiated new genome".format(self.genome_id))
@@ -150,7 +152,10 @@ class Genome(list):
 
         log.debug(u"G{0}: Instantiating gene {1} with {2}".format(
             self.genome_id, gene, param_vals))
-        return cons(*param_vals)
+
+        unnamed_params = [v for p, v in zip(gene_params, param_vals) if p.name is None]
+        named_params = {p.name: v for p, v in zip(gene_params, param_vals) if p.name}
+        return cons(*unnamed_params, **named_params)
 
     def get_gene_params(self, gene):
         if not hasattr(gene, '_pyvotune_params'):

@@ -35,17 +35,57 @@ class TestCrossover(unittest.TestCase):
 
         parents = [g1, g2]
 
-        print parents
-
         for i in range(1):
             children = pyvotune.variators.n_point_crossover(
-                r, parents, {'mutation_rate': 1.0})
+                r, parents, {})
 
-            print children
-            #new_val = g2[0][1]
-            #if new_val != prev_val:
-                #some_diff = True
-            #self.assertTrue(new_val >= 0 and new_val < 5)
+            self.assertTrue(children)
 
-        #self.assertTrue(some_diff)
+            for child in children:
+                for parent in parents:
+                    found_diff = False
+                    for c, p in zip(child, parent):
+                        if c != p:
+                            found_diff = True
 
+                    self.assertTrue(found_diff)
+
+    def test_uniform(self):
+        @pyvotune.pint(
+            range=(0, 5))
+        class P1:
+            def __init__(self, intparam):
+                self.intparam = intparam
+
+        g1 = pyvotune.Genome(get_id())
+        g1.add_gene([0], P1)
+        g1.add_gene([0], P1)
+        self.assertTrue(g1.assemble())
+
+        g2 = pyvotune.Genome(get_id())
+        g2.add_gene([1], P1)
+        g2.add_gene([1], P1)
+        self.assertTrue(g2.assemble())
+
+        r = random.Random()
+
+        prev_val = g1[0][1]
+        some_diff = False
+
+        parents = [g1, g2]
+
+        for i in range(1):
+            children = pyvotune.variators.uniform_crossover(
+                r, parents, {'ux_bias': 1.0})
+
+            self.assertTrue(children)
+
+            found_diff = False
+
+            for child in children:
+                for parent in parents:
+                    for c, p in zip(child, parent):
+                        if c != p:
+                            found_diff = True
+
+            self.assertTrue(found_diff)

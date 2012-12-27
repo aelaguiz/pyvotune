@@ -4,12 +4,13 @@
 class Param:
     def __init__(
         self, checker_fn, checker_args, generator_fn,
-            generator_args, rng):
+            generator_args, rng, name):
         self.checker_fn = checker_fn
         self.checker_args = checker_args
         self.generator_fn = generator_fn
         self.generator_args = generator_args
         self.rng = rng
+        self.name = name
 
     def generate(self):
         """
