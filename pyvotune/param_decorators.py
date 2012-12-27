@@ -99,6 +99,21 @@ class pfloat(param):
             rng, name)
 
 
+class pconst(param):
+    """
+    @pyvotune.pconst()
+    """
+    def __init__(
+            self, value, name=None):
+
+        param.__init__(
+            self, const_checker, {
+                'const_value': value
+            }, const_generator, {
+                'const_value': value
+            }, name=name)
+
+
 class pbool(param):
     """
     @pyvotune.pbool()

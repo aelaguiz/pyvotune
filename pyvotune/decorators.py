@@ -109,8 +109,11 @@ def non_empty_input(cls):
     return add_property(cls, 'input', 'empty', False)
 
 
+def dense_input(cls):
+    return add_property(cls, 'input', 'sparse', False)
+
+
 def sparse_input(cls):
-    cls = non_empty_input(cls)
     return add_property(cls, 'input', 'sparse', True)
 
 
@@ -127,8 +130,15 @@ def add_property(cls, direction, name, value):
     if not hasattr(cls, '_pyvotune'):
         cls._pyvotune = collections.defaultdict(dict)
 
+        # Default genes can be input
+        cls._pyvotune['input']['empty'] = [True, False]
+
         # Ensure that genes have to get their terminal status explicitely set
         cls._pyvotune['input']['last'] = False
+
+        # Ensure that the sparse state has to explicitly be set to be registered
+        # as sparse
+        #cls._pyvotune['input']['sparse'] = False
 
     cls._pyvotune[direction][name] = value
     return cls

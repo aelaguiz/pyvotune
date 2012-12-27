@@ -15,3 +15,7 @@ def choice_generator(rng, choices):
 
 def bool_generator(rng):
     return bool(rng.getrandbits(1))
+
+
+def const_generator(rng, const_value):
+    return const_value

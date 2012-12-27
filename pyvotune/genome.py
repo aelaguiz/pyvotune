@@ -17,9 +17,10 @@ log = logger()
 
 
 class Genome(list):
-    def __init__(self, genome_id, init_parts=[]):
+    def __init__(self, genome_id, initial_state={}, init_parts=[]):
         self.genome_id = genome_id
-        self.state = AssemblyState()
+        self.initial_state = initial_state
+        self.state = AssemblyState(initial_state)
 
         self.assembled = None
 

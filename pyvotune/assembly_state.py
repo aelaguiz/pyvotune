@@ -11,7 +11,13 @@ class AssemblyState(dict):
     track the state of a genome as it is being assembled. It is used
     for creation of genomes as well as assembly of existing genomes
     """
-    def __init__(self):
+    def __init__(self, initial_state={}):
+        if 'empty' not in initial_state:
+            initial_state['empty'] = True
+        if 'last' not in initial_state:
+            initial_state['last'] = False
+
+        self.initial_state = initial_state
         self.clear()
 
     def __setitem__(self, key, val):
@@ -23,8 +29,7 @@ class AssemblyState(dict):
 
     def clear(self):
         super(AssemblyState, self).clear()
-        super(AssemblyState, self).__setitem__('empty', True)
-        super(AssemblyState, self).__setitem__('last', False)
+        self.update(self.initial_state)
 
     def is_gene_avail(self, gene):
         """

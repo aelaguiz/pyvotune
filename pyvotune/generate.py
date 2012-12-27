@@ -23,7 +23,9 @@ class Generate:
             self, gene_pool,
             max_length,
             noop_frequency=0.2,
+            initial_state={},
             rng=random):
+        self.initial_state = initial_state
         self.max_length = max_length
         self.noop_frequency = noop_frequency
         self.rng = rng
@@ -40,7 +42,7 @@ class Generate:
             max_retries))
 
     def _generate(self):
-        genome = Genome(get_id())
+        genome = Genome(get_id(), self.initial_state)
 
         for i in range(self.max_length):
             gene = self.next_gene(genome)

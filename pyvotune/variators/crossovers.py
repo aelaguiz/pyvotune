@@ -39,19 +39,19 @@ def n_point_crossover(random, mom, dad, args):
     num_crossover_points = args.setdefault('num_crossover_points', 1)
     children = []
     if random.random() < crossover_rate:
-        mom = mom.group_genes()
-        dad = dad.group_genes()
-        bro = copy.copy(dad)
-        sis = copy.copy(mom)
+        mom_genes = mom.group_genes()
+        dad_genes = dad.group_genes()
+        bro = copy.copy(dad_genes)
+        sis = copy.copy(mom_genes)
 
-        num_cuts = min(len(mom) - 1, num_crossover_points)
+        num_cuts = min(len(mom_genes) - 1, num_crossover_points)
 
-        cut_points = random.sample(range(1, len(mom)), num_cuts)
+        cut_points = random.sample(range(1, len(mom_genes)), num_cuts)
 
         cut_points.sort()
 
         normal = True
-        for i, (m, d) in enumerate(zip(mom, dad)):
+        for i, (m, d) in enumerate(zip(mom_genes, dad_genes)):
             if i in cut_points:
                 normal = not normal
 
@@ -59,8 +59,10 @@ def n_point_crossover(random, mom, dad, args):
                 bro[i] = m
                 sis[i] = d
 
-        children.append(pyvotune.Genome(get_id(), init_parts=bro))
-        children.append(pyvotune.Genome(get_id(), init_parts=sis))
+        children.append(pyvotune.Genome(
+            get_id(), initial_state=dad.initial_state, init_parts=bro))
+        children.append(pyvotune.Genome(
+            get_id(), initial_state=mom.initial_state, init_parts=sis))
     else:
         children.append(mom)
         children.append(dad)
@@ -75,18 +77,20 @@ def uniform_crossover(random, mom, dad, args):
 
     children = []
     if random.random() < crossover_rate:
-        mom = mom.group_genes()
-        dad = dad.group_genes()
-        bro = copy.copy(dad)
-        sis = copy.copy(mom)
+        mom_genes = mom.group_genes()
+        dad_genes = dad.group_genes()
+        bro = copy.copy(dad_genes)
+        sis = copy.copy(mom_genes)
 
-        for i, (m, d) in enumerate(zip(mom, dad)):
+        for i, (m, d) in enumerate(zip(mom_genes, dad_genes)):
             if random.random() < ux_bias:
                 bro[i] = m
                 sis[i] = d
 
-        children.append(pyvotune.Genome(get_id(), init_parts=bro))
-        children.append(pyvotune.Genome(get_id(), init_parts=sis))
+        children.append(pyvotune.Genome(
+            get_id(), initial_state=dad.initial_state, init_parts=bro))
+        children.append(pyvotune.Genome(
+            get_id(), initial_state=mom.initial_state, init_parts=sis))
     else:
         children.append(mom)
         children.append(dad)

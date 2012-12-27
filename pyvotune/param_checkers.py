@@ -14,3 +14,7 @@ def range_checker(val, lower_bound, upper_bound):
 
 def choice_checker(val, choices):
     return val in choices
+
+
+def const_checker(val, const_value):
+    return val == const_value

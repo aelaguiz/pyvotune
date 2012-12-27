@@ -34,7 +34,7 @@ def param_reset_mutation(random, candidate, args):
     Varies a candidate by randomly resetting parameters
     """
     rate = args.setdefault('mutation_rate', 0.1)
-    mutant = pyvotune.Genome(get_id())
+    mutant = pyvotune.Genome(get_id(), initial_state=candidate.initial_state)
     grouped_genes = candidate.group_genes()
 
     for gene, gene_param, param_values in grouped_genes:
@@ -71,7 +71,8 @@ def scramble_mutation(random, candidate, args):
         random.shuffle(s)
 
         return pyvotune.Genome(
-            get_id(), init_parts=grouped_genes[:p] + s[::-1] + grouped_genes[q + 1:])
+            get_id(), initial_state=candidate.initial_state,
+            init_parts=grouped_genes[:p] + s[::-1] + grouped_genes[q + 1:])
     else:
         return candidate
 
