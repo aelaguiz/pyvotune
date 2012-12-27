@@ -7,6 +7,8 @@ import re
 
 import random
 
+SPEED_OF_LIGHT = 299792458
+
 
 @pyvotune.loader
 @pyvotune.output_type("scalar")
@@ -20,7 +22,7 @@ class mass:
         self.equation = equat
 
     def __repr__(self):
-        return "m" + self.equation
+        return "E = m" + self.equation
 
     def __call__(self, m):
         return eval(str(m) + self.equation)
@@ -60,7 +62,6 @@ def generator(random, args):
 def evaluator(candidate, args):
     equation = eq(candidate)
     if not equation:
-        #print "Invalidate candidate", candidate
         return sys.maxint
 
     total_err = 0
@@ -75,20 +76,16 @@ def evaluator(candidate, args):
 
         total_err += err
 
-    #print "Evaluating", loader, "=", total_err
-
     return total_err
 
 
 def actual(val):
-    return val * (299792458 ** 2)
+    return val * (SPEED_OF_LIGHT ** 2)
 
 
 def eq(candidate):
     if not candidate.assemble():
         return
-
-    #print "Validate candidate", candidate
 
     individual = candidate.assembled
     loader = individual[0]
@@ -106,6 +103,37 @@ def comma_me(amount):
         return new
     else:
         return comma_me(new)
+
+
+def summarize(best_eq):
+    sum_errs = 0
+    samps = 5
+    for i in range(samps):
+        val = random.uniform(-100000, 100000)
+        #val = i
+
+        target = actual(val)
+        observed = best_eq(val)
+
+        err = abs(target - observed)
+        err_pct = 0
+        if target:
+            err_pct = (err / abs(target)) * 100.0
+
+        sum_errs += err ** 2
+        print i, comma_me(target), comma_me(observed), comma_me(err),\
+            comma_me(err_pct) + "%"
+
+    print ""
+    print "Actual Solution:" "E = m *", SPEED_OF_LIGHT, "*", SPEED_OF_LIGHT
+    print "Best Solution:", best_eq
+    print "Actual C:", SPEED_OF_LIGHT ** 2
+    print "Our C:", best_eq(1)
+    print "Diff:", abs(best_eq(1) - SPEED_OF_LIGHT ** 2)
+    print "Diff Pct:", round(abs(
+        best_eq(1) - SPEED_OF_LIGHT ** 2) / (SPEED_OF_LIGHT ** 2.) * 100, 2)
+    print "Fitness", best.fitness
+    print "MSE", sum_errs / samps
 
 
 if __name__ == '__main__':
@@ -132,22 +160,11 @@ if __name__ == '__main__':
         pyvotune_generator=gen,
 
         max_time=15,
-        pop_size=100,
+        pop_size=200,
         maximize=False,
         num_elites=5)
 
     best = max(final_pop)
     best_eq = eq(best.candidate)
-    print "Best Solution:", best_eq
-    print "Fitness", best.fitness
-    print ""
 
-    for i in range(100):
-        #val = random.uniform(-100000, 100000)
-        val = i
-
-        target = actual(val)
-        observed = best_eq(val)
-
-        err = abs(target - observed)
-        print i, comma_me(target), comma_me(observed), comma_me(err)
+    summarize(best_eq)
