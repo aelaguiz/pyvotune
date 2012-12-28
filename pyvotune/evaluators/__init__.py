@@ -1,0 +1,1 @@
+from pyvotune.evaluators.ea_parallel_evaluator import parallel_evaluation_mp

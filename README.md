@@ -118,6 +118,34 @@ This example uses the [Boston Housing Dataset](http://archive.ics.uci.edu/ml/dat
 
 Using the sklearn digit recognition dataset we evolve a classifier pipeline.
 
+### Digit Recognition Classification - Cellular EA Version
+             precision    recall  f1-score   support
+
+          0       1.00      1.00      1.00        21
+          1       1.00      1.00      1.00        26
+          2       1.00      1.00      1.00        28
+          3       1.00      1.00      1.00        18
+          4       1.00      1.00      1.00        19
+          5       1.00      1.00      1.00        21
+          6       1.00      1.00      1.00        16
+          7       1.00      0.97      0.98        29
+          8       1.00      1.00      1.00        25
+          9       0.96      1.00      0.98        22
+
+avg / total       1.00      1.00      1.00       225
+
+Fitness: 100.0
+Genome: y1T9N
+	Gene 0: Normalizer
+		Param 0: norm: choice - l1
+	Gene 1: SVC
+		Param 0: C: float - 105.825231081
+		Param 1: kernel: choice - rbf
+		Param 2: degree: int - 2
+		Param 3: gamma: float - 13.0811950039
+		Param 4: coef0: float - 4746.75879451
+		Param 5: shrinking: bool - False
+
 * * *
 
 ### License
