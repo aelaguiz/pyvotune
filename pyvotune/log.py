@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from logging import getLogger, StreamHandler, Formatter, getLoggerClass, DEBUG
+import time
 
 logger_name = 'pyvotune'
 
@@ -46,7 +47,8 @@ def create_logger():
 
     class DebugFormatter(Formatter):
         def format(self, record):
-            return "%s [%s] >> %s" % (
+            return "%s %s [%s] >> %s" % (
+                time.strftime("%H:%M:%S", time.localtime(record.created)),
                 ("%s %s" % (record.levelname, record.module)).ljust(15)[:15],
                 ("%s:%d@%s" % (record.filename, record.lineno, record.funcName)).ljust(30)[:30],
                 record.msg)

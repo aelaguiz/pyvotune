@@ -9,51 +9,65 @@ import Queue
 import itertools
 import collections
 import time
+import os
 
 from pyvotune.log import logger
 
 import multiprocessing
 from multiprocessing import Process, cpu_count, TimeoutError
-from multiprocessing.util import Finalize
+from multiprocessing.util import Finalize, log_to_stderr
 from multiprocessing.pool import TERMINATE, CLOSE, RUN, Pool, IMapIterator, IMapUnorderedIterator, mapstar, ApplyResult, MapResult
+from logging import DEBUG
+
 
 log = logger()
 
 
 def worker(proc_num, inqueue, outqueue, initializer=None, initargs=(), maxtasks=None):
-    assert maxtasks is None or (type(maxtasks) == int and maxtasks > 0)
-    put = outqueue.put
-    get = inqueue.get
+    print "In worker process"
+    try:
+        log.debug("Worker {0} asserting".format(maxtasks))
+        assert maxtasks is None or (type(maxtasks) == int and maxtasks > 0)
+        put = outqueue.put
+        get = inqueue.get
 
-    if initializer is not None:
-        initializer(*initargs)
+        log.debug("Worker {0} started".format(proc_num))
 
-    completed = 0
-    while maxtasks is None or (maxtasks and completed < maxtasks):
-        try:
-            task = get()
-        except (EOFError, IOError):
-            log.debug('worker got EOFError or IOError -- exiting')
-            break
+        if initializer is not None:
+            initializer(*initargs)
 
-        if task is None:
-            log.debug('worker got sentinel -- exiting')
-            break
+        completed = 0
+        while maxtasks is None or (maxtasks and completed < maxtasks):
+            try:
+                task = get()
+            except (EOFError, IOError):
+                log.debug('worker got EOFError or IOError -- exiting')
+                break
 
-        job, i, func, args, kwds = task
-        try:
-            put((job, i, proc_num, 'started'))
-            log.debug("Worker {0} starting job {1}".format(proc_num, job))
+            if task is None:
+                log.debug('worker got sentinel -- exiting')
+                break
 
-            result = (True, func(*args, **kwds))
+            job, i, func, args, kwds = task
+            try:
+                put((job, i, proc_num, 'started'))
+                log.debug("Worker {0} starting job {1} {2} {3}".format(
+                    proc_num, job, func, args))
 
-            log.debug("Worker {0} finished job {1}".format(proc_num, job))
-        except Exception, e:
-            log.exception("Exception in worker {0} - {1}".format(proc_num, e))
-            result = (False, e)
-        put((job, i, proc_num, result))
-        completed += 1
-    log.debug('worker exiting after %d tasks' % completed)
+                result = (True, func(*args, **kwds))
+
+                log.debug("Worker {0} finished job {1} {2} {3}".format(
+                    proc_num, job, func, args))
+            except Exception, e:
+                log.exception("Exception in worker {0} - {1} - {2} {3} {4}".format(
+                    proc_num, e, job, func, args))
+                result = (False, e)
+            put((job, i, proc_num, result))
+            completed += 1
+        log.debug('worker exiting after %d tasks' % completed)
+    except:
+        log.exception("Worker excepted {0}".format(
+            proc_num))
 
 
 class TimeoutPool(object):
@@ -64,6 +78,8 @@ class TimeoutPool(object):
 
     def __init__(self, processes=None, initializer=None, initargs=(),
                  maxtasksperchild=None, timeout_seconds=30):
+        log_to_stderr(level=DEBUG)
+
         self._setup_queues()
         self._taskqueue = Queue.Queue()
         self._cache = {}
@@ -150,14 +166,16 @@ class TimeoutPool(object):
                              args=(proc_num,
                                    self._inqueue, self._outqueue,
                                    self._initializer,
-                                   self._initargs, self._maxtasksperchild)
+                                   self._initargs,
+                                   self._maxtasksperchild)
                              )
             w._proc_num = proc_num
             self._pool.append(w)
             w.name = w.name.replace('Process', 'PoolWorker')
             w.daemon = True
             w.start()
-            log.debug('added worker')
+            log.debug("groups {0}".format(os.getgroups()))
+            log.debug('added worker {0} {1}'.format(w.name, len(self._pool) - 1))
 
     def _maintain_pool(self):
         """Clean up any exited workers and start replacements for them.

@@ -166,8 +166,8 @@ if __name__ == '__main__':
         test_y=test_y,
 
         num_generation_seed=4,
-        nbh_grid_size=22,
-        nbh_size=3,
+        nbh_grid_size=10,
+        nbh_size=1,
 
         maximize=True,
         num_elites=5)
