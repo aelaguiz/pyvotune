@@ -1,5 +1,5 @@
 from rq import Worker, Queue, Connection
-from rq.job import Status
+from rq.job import Status, NoSuchJobError
 
 import pyvotune.evaluators.cea_rq_runner
 
@@ -85,19 +85,18 @@ def dispatch_results(async_results, args):
     running_count = 0
     logger.debug("Checking {0} for results".format(len(async_results)))
     for idx, callback_fn, ind, job, start_time in list(async_results):
-        job.refresh()
+        job_dead = False
+
+        try:
+            job.refresh()
+        except NoSuchJobError as e:
+            logger.debug("Job {0} does not exist anymore".format(
+                job))
+            job_dead = True
+
         #logger.debug("Job {0} Status {1}".format(
             #job, job.status))
-        if job.status == Status.FINISHED and job.result is not None:
-            ret = job.result
-
-            #logger.debug("Received results from {0} = {1} after {2}s".format(
-                #ind, ret, (time.time() - start_time)))
-
-            ind.fitness = ret
-
-            defered.append((idx, callback_fn, ind))
-        elif job.status == Status.FAILED or \
+        if job_dead or job.status == Status.FAILED or \
                 (job.status == Status.FINISHED and job.result is None):
                 #(job.status == Status.STARTED and start_time is not None and
                     #(time.time()-start_time) > (rq_timeout+5)):
@@ -106,6 +105,15 @@ def dispatch_results(async_results, args):
                 ind, (time.time() - start_time) if start_time else None))
 
             ind.fitness = timeout_val
+
+            defered.append((idx, callback_fn, ind))
+        elif job.status == Status.FINISHED and job.result is not None:
+            ret = job.result
+
+            #logger.debug("Received results from {0} = {1} after {2}s".format(
+                #ind, ret, (time.time() - start_time)))
+
+            ind.fitness = ret
 
             defered.append((idx, callback_fn, ind))
         else:
