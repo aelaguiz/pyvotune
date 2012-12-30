@@ -161,7 +161,7 @@ if __name__ == '__main__':
         rq_constr=con_str,
         rq_evaluator=evaluator,
         #mp_ncpus=12,
-        rq_timeout=30,
+        rq_timeout=300,
         rq_timeout_fitness=0,
 
         crossover_rate=0.3,
@@ -178,7 +178,7 @@ if __name__ == '__main__':
         test_X=test_X,
         test_y=test_y,
 
-        nbh_grid_size=100,
+        nbh_grid_size=28,
         nbh_size=9,
         num_selected=6,
 

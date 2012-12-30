@@ -60,13 +60,9 @@ def _child_runner(child_conn, candidates, args):
         evaluator = args['rq_evaluator']
 
         res = evaluator(candidates, args)
-        log.debug("Result of evaluation in child {0}".format(
-            res))
     except Exception as e:
         log.exception("Excepted in child {0}".format(e))
         res = args['rq_timeout_fitness']
 
     child_conn.send(res)
     child_conn.close()
-
-    log.debug("Child exitting")
