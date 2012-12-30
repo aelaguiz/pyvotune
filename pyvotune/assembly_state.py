@@ -56,27 +56,27 @@ class AssemblyState(dict):
         for req, val in requirements.iteritems():
             if req == '_fn':
                 if not val(gene, self):
-                    log.debug(
-                        u"Gene {0} failed validation function {1}".format(
-                            gene, val))
+                    #log.debug(
+                        #u"Gene {0} failed validation function {1}".format(
+                            #gene, val))
                     return False
             elif val is None and req not in self:
                 continue
             elif req not in self:
-                log.debug(
-                    u"Gene {0} is missing requirement {1}:{2} in state {3}".format(
-                        gene, req, val, self))
+                #log.debug(
+                    #u"Gene {0} is missing requirement {1}:{2} in state {3}".format(
+                        #gene, req, val, self))
                 return False
             elif isinstance(val, list) or isinstance(val, set):
                 if self[req] not in val:
-                    log.debug(
-                        u"Gene {0} requirement {1} failed state {2} not in gene {3}".format(
-                            gene, req, self[req], val))
+                    #log.debug(
+                        #u"Gene {0} requirement {1} failed state {2} not in gene {3}".format(
+                            #gene, req, self[req], val))
                     return False
             elif self[req] != val:
-                log.debug(
-                    u"Gene {0} requirement {1} failed state {2} != gene {3}".format(
-                        gene, req, self[req], val))
+                #log.debug(
+                    #u"Gene {0} requirement {1} failed state {2} != gene {3}".format(
+                        #gene, req, self[req], val))
                 return False
 
         return True

@@ -24,8 +24,8 @@ def crossover(cross):
             if children:
                 return children
 
-            log.debug(u"Crossing over failed between {0} and {1}".format(
-                mom, dad))
+            #log.debug(u"Crossing over failed between {0} and {1}".format(
+                #mom, dad))
 
         return [mom, dad]
 

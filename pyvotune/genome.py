@@ -26,8 +26,8 @@ class Genome(list):
 
         [self.add_gene(v, g) for g, p, v in init_parts]
 
-        log.debug(
-            u"G{0}: Instantiated new genome".format(self.genome_id))
+        #log.debug(
+            #u"G{0}: Instantiated new genome".format(self.genome_id))
 
     def add_gene(self, param_vals, gene):
         """
@@ -38,8 +38,8 @@ class Genome(list):
 
         self.state.gene_update(gene)
 
-        log.debug(
-            u"G{0}: Added new gene {1}".format(self.genome_id, gene))
+        #log.debug(
+            #u"G{0}: Added new gene {1}".format(self.genome_id, gene))
 
     def does_gene_fit(self, gene):
         """
@@ -89,8 +89,8 @@ class Genome(list):
             self.assembled = [
                 self.construct_gene(g, p, v) for g, p, v in to_assemble]
 
-            log.debug(
-                u"G{0}: Assembled successfully".format(self.genome_id))
+            #log.debug(
+                #u"G{0}: Assembled successfully".format(self.genome_id))
         return True
 
     def group_genes(self):
@@ -105,8 +105,8 @@ class Genome(list):
         num_active = len(active_genes)
 
         if 0 == num_active:
-            log.debug(u"G{0}: Invalid - contains no active genes".format(
-                self.genome_id))
+            #log.debug(u"G{0}: Invalid - contains no active genes".format(
+                #self.genome_id))
             return False
 
         self.state.clear()
@@ -118,15 +118,15 @@ class Genome(list):
                 self.state["last"] = True
 
             if not self.does_gene_fit(gene):
-                log.debug(
-                    u"G{0}: Invalid - Gene does not fit in current state {1} {2}".format(
-                        self.genome_id, gene, self.state))
+                #log.debug(
+                    #u"G{0}: Invalid - Gene does not fit in current state {1} {2}".format(
+                        #self.genome_id, gene, self.state))
                 return False
 
             if not self.state.is_gene_placement_valid(gene):
-                log.debug(
-                    u"G{0}: Invalid - Gene does not have correct placement {1} {2}".format(
-                        self.genome_id, gene, self.state))
+                #log.debug(
+                    #u"G{0}: Invalid - Gene does not have correct placement {1} {2}".format(
+                        #self.genome_id, gene, self.state))
                 return False
 
             gene_params = self.get_gene_params(gene)
@@ -164,8 +164,8 @@ class Genome(list):
                 'factory_fn' in gene._pyvotune_assembly_params:
             cons = gene._pyvotune_assembly_params['factory_fn']
 
-        log.debug(u"G{0}: Instantiating gene {1} with {2}".format(
-            self.genome_id, gene, param_vals))
+        #log.debug(u"G{0}: Instantiating gene {1} with {2}".format(
+            #self.genome_id, gene, param_vals))
 
         unnamed_params = [v for p, v in zip(gene_params, param_vals) if p.name is None]
         named_params = {p.name: v for p, v in zip(gene_params, param_vals) if p.name}

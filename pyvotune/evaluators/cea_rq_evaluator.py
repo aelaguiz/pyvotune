@@ -1,0 +1,150 @@
+from rq import Worker, Queue, Connection
+from rq.job import Status
+import functools
+import time
+import redis
+
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
+__async_results = []
+__async_queue = None
+
+
+def get_queue(args):
+    global __async_queue
+
+    if __async_queue:
+        return __async_queue
+
+    name = args.setdefault('rq_name', 'pyvotune')
+    con_str = args['rq_constr']
+
+    con = redis.from_url(con_str)
+
+    __async_queue = Queue(name, connection=con)
+
+    return __async_queue
+
+
+def cell_evaluator_rq(individuals, callback_fn, args):
+    """
+    Evaluator function will asynchronously dispatch any new individuals
+    for evaluation and block while there are outstanding evaluations.
+
+    This functions by maintaining a single global process pool which is
+    spun up on demand and then maintained until `cell_evaluator_mp_cleanup`
+    is called.
+
+    This allows asynchronous operations to take place because the callback
+    into the actual algorithm will allow new asynchronous operations to
+    be enqueued in a recursive manner.
+    """
+    global __async_results
+
+    evaluator = get_evaluator(args)
+    logger = args['_ec'].logger
+    rq_timeout = args.setdefault('rq_timeout', 60)
+
+    if individuals:
+        queue = get_queue(args)
+
+        rq_evaluator = args['rq_evaluator']
+        pickled_args = get_args(args)
+
+        for idx, ind in individuals:
+            job = queue.enqueue_call(
+                func=rq_evaluator,
+                args=( 
+                    [ind.candidate], pickled_args),
+                timeout=rq_timeout)
+            
+            #logger.debug("Dispatching {0} for evaluation".format(
+                #ind))
+            __async_results.append((idx, callback_fn, ind, job, None))
+
+    defered, __async_results = dispatch_results(__async_results, args)
+    [callback_fn(idx, ind) for (idx, callback_fn, ind) in defered]
+
+
+def dispatch_results(async_results, args):
+    """Calls the evaluation callback for any asynchronous evaluations which have
+    finished processing and returned results.
+    """
+
+    timeout_val = args.setdefault('rq_timeout_fitness', 0)
+    rq_timeout = args.setdefault('rq_timeout', 60)
+
+    logger = args['_ec'].logger
+
+    defered = []
+
+    remaining_results = []
+
+    running_count = 0
+    logger.debug("Checking {0} for results".format(len(async_results)))
+    for idx, callback_fn, ind, job, start_time in list(async_results):
+        job.refresh()
+        #logger.debug("Job {0} Status {1}".format(
+            #job, job.status))
+        if job.status == Status.FINISHED and job.result is not None:
+            ret = job.result[0]
+
+            #logger.debug("Received results from {0} = {1} after {2}s".format(
+                #ind, ret, (time.time() - start_time)))
+
+            ind.fitness = ret
+
+            defered.append((idx, callback_fn, ind))
+        elif job.status == Status.FAILED or \
+                (job.status == Status.FINISHED and job.result is None) or\
+                (job.status == Status.STARTED and start_time is not None and
+                    (time.time()-start_time) > (rq_timeout+5)):
+
+            logger.warning("Failed getting fitness for {0} ind, after {1}".format(
+                ind, (time.time() - start_time)))
+
+            ind.fitness = timeout_val
+
+            defered.append((idx, callback_fn, ind))
+        else:
+            if job.status == Status.STARTED:
+                running_count += 1
+                if start_time is None:
+                    logger.debug("Job {0} - {1} started".format(
+                        idx, ind))
+                    start_time = time.time()
+            #logger.debug("Continuing to wait for {0} after {1} seconds".format(
+                #idx, (time.time() - start_time)))
+            remaining_results.append((idx, callback_fn, ind, job, start_time))
+
+    logger.debug("{0} jobs running".format(running_count))
+
+    return defered, remaining_results
+
+
+def get_evaluator(args):
+    logger = args['_ec'].logger
+
+    try:
+        return args['rq_evaluator']
+    except KeyError:
+        logger.error('cea_rq_evaluator requires \'rp_evaluator\' be defined in the keyword arguments list')
+        raise 
+
+
+def get_args(args):
+    logger = args['_ec'].logger
+
+    pickled_args = {}
+    for key in args:
+        try:
+            pickle.dumps(args[key])
+            pickled_args[key] = args[key]
+        except (TypeError, pickle.PickleError, pickle.PicklingError):
+            #logger.debug('unable to pickle args parameter {0} in parallel_evaluation_mp'.format(key))
+            pass
+
+    return pickled_args

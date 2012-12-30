@@ -6,6 +6,7 @@ import pyvotune
 import pyvotune.sklearn
 import random
 import sys
+import redis
 
 from sklearn.cross_validation import train_test_split
 from sklearn.pipeline import Pipeline
@@ -125,6 +126,7 @@ if __name__ == '__main__':
         #inspyred.ec.terminators.time_termination,
         inspyred.ec.terminators.average_fitness_termination
     ]
+    ea.selector = inspyred.ec.selectors.fitness_proportionate_selection
 
     ea.observer = inspyred.ec.observers.stats_observer
 
@@ -136,28 +138,31 @@ if __name__ == '__main__':
     ]
 
 
-    nprocs = multiprocessing.cpu_count()
+    nprocs = int(multiprocessing.cpu_count() * 1.5)
+    #nprocs = 8
 
-    timeout_pool = pyvotune.util.TimeoutPool(processes=nprocs, timeout_seconds=15)
-    inspyred.ec.cea_parallel_evaluator.set_pool(timeout_pool)
+    con_str = "redis://localhost:6379/3"
+
+    # Start redis queue workers
+    pyvotune.evaluators.cea_rq_worker.start_workers(processes=nprocs, con_str=con_str)
 
     # Go!
     final_pop = ea.evolve(
         neighborhood=inspyred.ec.neighborhoods.grid_neighborhood,
 
         generator=generator,
-        evaluator=inspyred.ec.cea_parallel_evaluator.cell_evaluator_mp,
+        evaluator=pyvotune.evaluators.cell_evaluator_rq,
         pyvotune_generator=gen,
 
         async_evaluator=True,
 
-        mp_evaluator=evaluator,
+        rq_constr=con_str,
+        rq_evaluator=evaluator,
         #mp_ncpus=12,
-        #mp_timeout=60,
-        mp_timeout_return=0,
-        mp_timeout_fitness=0,
+        rq_timeout=30,
+        rq_timeout_fitness=0,
 
-        tolerance=0.25,
+        tolerance=0.01,
         #max_time=300,
 
         train_X=train_X,
@@ -165,14 +170,13 @@ if __name__ == '__main__':
         test_X=test_X,
         test_y=test_y,
 
-        num_generation_seed=4,
-        nbh_grid_size=10,
-        nbh_size=1,
+        num_generation_seed=6,
+        nbh_grid_size=22,
+        nbh_size=3,
+        num_selected=2,
 
         maximize=True,
         num_elites=5)
-
-    inspyred.ec.cea_parallel_evaluator.cell_evaluator_mp_cleanup()
 
     ####################
     # Display Solution #
