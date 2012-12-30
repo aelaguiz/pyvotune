@@ -7,6 +7,7 @@ import pyvotune.sklearn
 import random
 import sys
 import redis
+import time
 
 from sklearn.cross_validation import train_test_split
 from sklearn.pipeline import Pipeline
@@ -143,52 +144,10 @@ if __name__ == '__main__':
     nprocs = int(multiprocessing.cpu_count() * 2)
     #nprocs = 4
 
-    con_str = "redis://localhost:6379/3"
+    con_str = "redis://ip-10-157-0-244.ec2.internal:6379/3"
 
     # Start redis queue workers
     pyvotune.evaluators.cea_rq_worker.start_workers(processes=nprocs, con_str=con_str)
 
-    # Go!
-    final_pop = ea.evolve(
-        neighborhood=inspyred.ec.neighborhoods.grid_neighborhood,
-
-        generator=generator,
-        evaluator=pyvotune.evaluators.cell_evaluator_rq,
-        pyvotune_generator=gen,
-
-        async_evaluator=True,
-
-        rq_constr=con_str,
-        rq_evaluator=evaluator,
-        #mp_ncpus=12,
-        rq_timeout=30,
-        rq_timeout_fitness=0,
-
-        crossover_rate=0.3,
-        mutation_rate=0.2,
-
-        tolerance=0.01,
-        #max_time=300,
-
-        train_X=train_X,
-        train_y=train_y,
-        test_X=test_X,
-        test_y=test_y,
-
-        nbh_grid_size=100,
-        nbh_size=9,
-        num_selected=6,
-
-        maximize=True,
-        num_elites=5)
-
-    ####################
-    # Display Solution #
-    ####################
-    best = max(final_pop)
-    pipeline = train_candidate(best.candidate, train_X, train_y)
-    test_individual(pipeline, validate_X, validate_y, display=True)
-    print "Fitness:", best.fitness
-    print best.candidate
-
-
+    while True:
+        time.sleep(10000000000)
