@@ -9,6 +9,7 @@ from pyvotune.param import Param
 from pyvotune.genome import Genome
 from pyvotune.log import set_debug
 
+import pyvotune.observers
 import pyvotune.variators
 import pyvotune.evaluators
 

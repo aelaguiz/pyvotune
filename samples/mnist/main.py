@@ -128,7 +128,7 @@ if __name__ == '__main__':
     ]
     ea.selector = inspyred.ec.selectors.fitness_proportionate_selection
 
-    ea.observer = inspyred.ec.observers.stats_observer
+    ea.observer = pyvotune.observers.stats_observer
 
     # Use PyvoTun variators
     ea.variator = [
@@ -175,7 +175,7 @@ if __name__ == '__main__':
         test_X=test_X,
         test_y=test_y,
 
-        nbh_grid_size=22,
+        nbh_grid_size=28,
         nbh_size=3,
         num_selected=3,
 
