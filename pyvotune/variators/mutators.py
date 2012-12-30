@@ -51,6 +51,37 @@ def param_reset_mutation(random, candidate, args):
 
 
 @mutator
+def random_reset_mutation(random, candidate, args):
+    """
+    Varies a candidate by randomly resetting parameters
+    """
+    rate = args.setdefault('mutation_rate', 0.1)
+    generator = args['pyvotune_generator']
+    max_tries = args.setdefault('reset_max_tries', 25)
+
+    mutant = pyvotune.Genome(get_id(), initial_state=candidate.initial_state)
+    grouped_genes = candidate.group_genes()
+    mutant_genes = [random.random() for g in grouped_genes]
+
+    for i in range(max_tries):
+        for (gene, gene_param, param_values), r in zip(grouped_genes, mutant_genes):
+            new_values = []
+
+            if r < rate:
+                replacement = random.choice(generator.gene_pool)
+                vals = generator.get_gene_param_vals(replacement)
+
+                mutant.add_gene(vals, replacement)
+            else:
+                mutant.add_gene(param_values, gene)
+
+        if mutant.validate():
+            return mutant
+
+    return candidate
+
+
+@mutator
 def scramble_mutation(random, candidate, args):
     """
     Scrambles a candidate by switching around parts of the genome

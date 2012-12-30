@@ -20,5 +20,6 @@
 
 from mutators import param_reset_mutation
 from mutators import scramble_mutation
+from mutators import random_reset_mutation
 from crossovers import n_point_crossover
 from crossovers import uniform_crossover

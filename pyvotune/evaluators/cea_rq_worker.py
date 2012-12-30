@@ -1,5 +1,5 @@
 from rq import Queue, Worker, Connection
-from multiprocessing import Pool
+from multiprocessing import Process
 import redis
 
 from pyvotune.log import logger
@@ -18,7 +18,6 @@ def _start_worker(con_str, queue):
 
 
 def start_workers(processes, con_str, queue='pyvotune'):
-    pool = Pool(processes)
-
     for i in range(processes):
-        pool.apply_async(_start_worker, (con_str, queue, ))
+        p = Process(target=_start_worker, args=(con_str, queue))
+        p.start()

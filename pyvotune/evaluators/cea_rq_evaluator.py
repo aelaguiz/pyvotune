@@ -1,13 +1,13 @@
 from rq import Worker, Queue, Connection
 from rq.job import Status
+
+import pyvotune.evaluators.cea_rq_runner
+
+from .util import get_args
+
 import functools
 import time
 import redis
-
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
 
 __async_results = []
 __async_queue = None
@@ -51,16 +51,15 @@ def cell_evaluator_rq(individuals, callback_fn, args):
     if individuals:
         queue = get_queue(args)
 
-        rq_evaluator = args['rq_evaluator']
         pickled_args = get_args(args)
 
         for idx, ind in individuals:
             job = queue.enqueue_call(
-                func=rq_evaluator,
+                func=pyvotune.evaluators.cea_rq_runner.rq_runner,
                 args=( 
                     [ind.candidate], pickled_args),
-                timeout=rq_timeout)
-            
+                timeout=rq_timeout+2)
+           
             #logger.debug("Dispatching {0} for evaluation".format(
                 #ind))
             __async_results.append((idx, callback_fn, ind, job, None))
@@ -90,7 +89,7 @@ def dispatch_results(async_results, args):
         #logger.debug("Job {0} Status {1}".format(
             #job, job.status))
         if job.status == Status.FINISHED and job.result is not None:
-            ret = job.result[0]
+            ret = job.result
 
             #logger.debug("Received results from {0} = {1} after {2}s".format(
                 #ind, ret, (time.time() - start_time)))
@@ -99,12 +98,12 @@ def dispatch_results(async_results, args):
 
             defered.append((idx, callback_fn, ind))
         elif job.status == Status.FAILED or \
-                (job.status == Status.FINISHED and job.result is None) or\
-                (job.status == Status.STARTED and start_time is not None and
-                    (time.time()-start_time) > (rq_timeout+5)):
+                (job.status == Status.FINISHED and job.result is None):
+                #(job.status == Status.STARTED and start_time is not None and
+                    #(time.time()-start_time) > (rq_timeout+5)):
 
             logger.warning("Failed getting fitness for {0} ind, after {1}".format(
-                ind, (time.time() - start_time)))
+                ind, (time.time() - start_time) if start_time else None))
 
             ind.fitness = timeout_val
 
@@ -131,20 +130,5 @@ def get_evaluator(args):
     try:
         return args['rq_evaluator']
     except KeyError:
-        logger.error('cea_rq_evaluator requires \'rp_evaluator\' be defined in the keyword arguments list')
+        logger.error('cea_rq_evaluator requires \'rq_evaluator\' be defined in the keyword arguments list')
         raise 
-
-
-def get_args(args):
-    logger = args['_ec'].logger
-
-    pickled_args = {}
-    for key in args:
-        try:
-            pickle.dumps(args[key])
-            pickled_args[key] = args[key]
-        except (TypeError, pickle.PickleError, pickle.PicklingError):
-            #logger.debug('unable to pickle args parameter {0} in parallel_evaluation_mp'.format(key))
-            pass
-
-    return pickled_args

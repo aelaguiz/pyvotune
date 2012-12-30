@@ -132,14 +132,16 @@ if __name__ == '__main__':
 
     # Use PyvoTun variators
     ea.variator = [
+        pyvotune.variators.random_reset_mutation,
         pyvotune.variators.param_reset_mutation,
         pyvotune.variators.scramble_mutation,
-        pyvotune.variators.uniform_crossover
+        pyvotune.variators.uniform_crossover,
+        pyvotune.variators.n_point_crossover
     ]
 
 
     nprocs = int(multiprocessing.cpu_count() * 1.5)
-    #nprocs = 8
+    #nprocs = 4
 
     con_str = "redis://localhost:6379/3"
 
@@ -162,6 +164,9 @@ if __name__ == '__main__':
         rq_timeout=30,
         rq_timeout_fitness=0,
 
+        crossover_rate=0.3,
+        mutation_rate=0.2,
+
         tolerance=0.01,
         #max_time=300,
 
@@ -170,10 +175,9 @@ if __name__ == '__main__':
         test_X=test_X,
         test_y=test_y,
 
-        num_generation_seed=6,
         nbh_grid_size=22,
         nbh_size=3,
-        num_selected=2,
+        num_selected=3,
 
         maximize=True,
         num_elites=5)
