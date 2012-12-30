@@ -165,10 +165,13 @@ if __name__ == '__main__':
         rq_timeout_fitness=0,
 
         crossover_rate=0.3,
+
         mutation_rate=0.2,
 
         tolerance=0.01,
         #max_time=300,
+
+        max_outstanding_individuals=1000,
 
         train_X=train_X,
         train_y=train_y,
