@@ -7,8 +7,9 @@ import pyvotune.sklearn
 import random
 import sys
 import redis
+import time
 
-from sklearn.cross_validation import train_test_split
+from sklearn.cross_validation import StratifiedKFold
 from sklearn.pipeline import Pipeline
 import sklearn.datasets
 import multiprocessing
@@ -16,6 +17,11 @@ import multiprocessing
 from loader import load_mnist
 
 log = pyvotune.log.logger()
+
+############################
+# Load the initial dataset #
+############################
+X, y = load_mnist()
 
 
 def generator(random, args):
@@ -32,74 +38,52 @@ def generator(random, args):
 
 @inspyred.ec.evaluators.evaluator
 def evaluator(candidate, args):
-    try:
-        individual = train_candidate(
-            candidate, args['train_X'], args['train_y'])
+    return _evaluator(candidate)
 
-        if not individual:
-            print "Failed to train", candidate
+
+def _evaluator(candidate, display=False):
+    try:
+        if not candidate.assemble():
+            print "Candidate failed to assemble", candidate
             return 0.
 
-        return test_individual(
-            individual, args['test_X'], args['test_y'])
+        pipeline = Pipeline([
+            (str(i), s) for i, s in enumerate(candidate.assembled)])
+
+        skf = StratifiedKFold(y, 3, indices=False)
+
+        start_time = time.time()
+        scores = []
+        for train_index, test_index in skf:
+            train_X, test_X = X[train_index], X[test_index]
+            train_y, test_y = y[train_index], y[test_index]
+
+            pipeline.fit(train_X, train_y)
+            observed_y = pipeline.predict(test_X)
+
+            f1 = sklearn.metrics.f1_score(test_y, observed_y)
+
+            scores.append(f1)
+
+            if display:
+                print sklearn.metrics.classification_report(test_y, observed_y)
+
+        avg_f1 = sum(scores) / float(len(scores)) * 100.
+
+        total_time = time.time() - start_time
+
+        print "Train/test time", total_time
+
+        return avg_f1
     except Exception as e:
-        try:
-            print "Exception:", e, candidate.genome_id
-            #print candidate
-        except Exception as e:
-            print "Exception in exception handler!!!"
-            print e
+        print "Exception:", e, candidate.genome_id
+        #print candidate
 
         return 0.
 
 
-def train_candidate(candidate, train_X, train_y):
-    if not candidate.assemble():
-        print "Candidate failed to assemble", candidate
-        return
-
-    pipeline = Pipeline([
-        (str(i), s) for i, s in enumerate(candidate.assembled)])
-
-    pipeline.fit(train_X, train_y)
-
-    return pipeline
-
-
-def test_individual(pipeline, test_X, test_y, display=False):
-    observed_y = pipeline.predict(test_X)
-
-    f1 = sklearn.metrics.f1_score(test_y, observed_y)
-
-    if display:
-        print sklearn.metrics.classification_report(test_y, observed_y)
-
-    return round(f1 * 100., 2)
-
-
 if __name__ == '__main__':
     pyvotune.set_debug(True)
-
-    ############################
-    # Load the initial dataset #
-    ############################
-    X, y = load_mnist()
-
-    print "Dataset loaded"
-
-    print X.shape
-    print y.shape
-
-    # Split the dataset into training, testing and then validation parts
-    train_X, temp_X, train_y, temp_y = train_test_split(X, y, test_size=0.25)
-
-    print "Split"
-    test_X, validate_X, test_y, validate_y = train_test_split(
-        temp_X, temp_y, test_size=0.5)
-
-    print "Training", train_X.shape
-    print "Testing", test_X.shape
-    print "Validation", validate_X.shape
 
     n_features = X.shape[1]
 
@@ -162,8 +146,7 @@ if __name__ == '__main__':
 
         rq_constr=con_str,
         rq_evaluator=evaluator,
-        #mp_ncpus=12,
-        rq_timeout=10,
+        rq_timeout=300,
         rq_timeout_fitness=0,
 
         crossover_rate=0.5,
@@ -176,11 +159,6 @@ if __name__ == '__main__':
         underlying_archiver=inspyred.ec.archivers.best_archiver,
         archive_path='./archive.pkl',
 
-        train_X=train_X,
-        train_y=train_y,
-        test_X=test_X,
-        test_y=test_y,
-
         nbh_grid_size=50,
         nbh_size=2,
         num_selected=2,
@@ -192,9 +170,6 @@ if __name__ == '__main__':
     # Display Solution #
     ####################
     best = max(final_pop)
-    pipeline = train_candidate(best.candidate, train_X, train_y)
-    test_individual(pipeline, validate_X, validate_y, display=True)
-    print "Fitness:", best.fitness
+    fitness = _evaluator(best.candidate, display=True)
+    print "Fitness:", fitness
     print best.candidate
-
-

@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def load_mnist():
+def load_mnist(num_lines=None):
     f = open("data/mnist_train.csv")
     lines = f.readlines()
     f.close()
@@ -10,7 +10,7 @@ def load_mnist():
     X = []
     y = []
     linecount = 0
-    for line in lines[1:100]:
+    for line in lines[1:num_lines if num_lines else len(lines)-1]:
         line = line.strip()
         parts = line.split(",")
 
@@ -22,4 +22,4 @@ def load_mnist():
     X = np.array(X, dtype='float32')
     y = np.array(y, dtype='int')
 
-    return X.reshape(linecount, 784), y
+    return X, y
