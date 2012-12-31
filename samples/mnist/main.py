@@ -166,7 +166,7 @@ if __name__ == '__main__':
 
         crossover_rate=0.5,
 
-        mutation_rate=0.2,
+        mutation_rate=0.3,
 
         tolerance=0.01,
         #max_time=300,
@@ -179,8 +179,8 @@ if __name__ == '__main__':
         test_y=test_y,
 
         nbh_grid_size=50,
-        nbh_size=9,
-        num_selected=6,
+        nbh_size=2,
+        num_selected=2,
 
         maximize=True,
         num_elites=5)
