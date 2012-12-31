@@ -34,8 +34,13 @@ def param_reset_mutation(random, candidate, args):
     Varies a candidate by randomly resetting parameters
     """
     rate = args.setdefault('mutation_rate', 0.1)
-    mutant = pyvotune.Genome(get_id(), initial_state=candidate.initial_state)
-    grouped_genes = candidate.group_genes()
+    mutant = pyvotune.Genome(
+        get_id(), initial_state=candidate.initial_state,
+        parent=candidate)
+    grouped_genes = candidate.group_genes(remove_noops=False)
+    if not grouped_genes:
+        print "Received invalid genome in mutator"
+        print candidate
 
     for gene, gene_param, param_values in grouped_genes:
         new_values = []
@@ -59,11 +64,15 @@ def random_reset_mutation(random, candidate, args):
     generator = args['pyvotune_generator']
     max_tries = args.setdefault('reset_max_tries', 25)
 
-    mutant = pyvotune.Genome(get_id(), initial_state=candidate.initial_state)
-    grouped_genes = candidate.group_genes()
+    grouped_genes = candidate.group_genes(remove_noops=False)
     mutant_genes = [random.random() for g in grouped_genes]
 
     for i in range(max_tries):
+        mutant = pyvotune.Genome(
+            get_id(),
+            initial_state=candidate.initial_state,
+            parent=candidate)
+
         for (gene, gene_param, param_values), r in zip(grouped_genes, mutant_genes):
             new_values = []
 
@@ -89,7 +98,7 @@ def scramble_mutation(random, candidate, args):
     rate = args.setdefault('mutation_rate', 0.1)
 
     if random.random() < rate:
-        grouped_genes = candidate.group_genes()
+        grouped_genes = candidate.group_genes(remove_noops=False)
 
         size = len(grouped_genes)
         p = random.randint(0, size - 1)
@@ -103,7 +112,8 @@ def scramble_mutation(random, candidate, args):
 
         return pyvotune.Genome(
             get_id(), initial_state=candidate.initial_state,
-            init_parts=grouped_genes[:p] + s[::-1] + grouped_genes[q + 1:])
+            init_parts=grouped_genes[:p] + s[::-1] + grouped_genes[q + 1:],
+            parent=candidate)
     else:
         return candidate
 

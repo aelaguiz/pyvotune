@@ -36,7 +36,7 @@ def rq_runner(candidates, args):
 
             else:
                 data = parent_conn.recv()
-                log.debug("Received from child {0}".format(data))
+                #log.debug("Received from child {0}".format(data))
 
                 proc.join(rq_timeout)
 
@@ -53,9 +53,6 @@ def rq_runner(candidates, args):
 
 
 def _child_runner(child_conn, candidates, args):
-    log.debug("In child runner {0}".format(
-        args))
-
     try:
         evaluator = args['rq_evaluator']
 

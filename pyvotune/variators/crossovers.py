@@ -39,8 +39,8 @@ def n_point_crossover(random, mom, dad, args):
     num_crossover_points = args.setdefault('num_crossover_points', 1)
     children = []
     if random.random() < crossover_rate:
-        mom_genes = mom.group_genes()
-        dad_genes = dad.group_genes()
+        mom_genes = mom.group_genes(remove_noops=False)
+        dad_genes = dad.group_genes(remove_noops=False)
         bro = copy.copy(dad_genes)
         sis = copy.copy(mom_genes)
 
@@ -60,9 +60,11 @@ def n_point_crossover(random, mom, dad, args):
                 sis[i] = d
 
         children.append(pyvotune.Genome(
-            get_id(), initial_state=dad.initial_state, init_parts=bro))
+            get_id(), initial_state=dad.initial_state, init_parts=bro,
+            parent=dad))
         children.append(pyvotune.Genome(
-            get_id(), initial_state=mom.initial_state, init_parts=sis))
+            get_id(), initial_state=mom.initial_state, init_parts=sis,
+            parent=mom))
     else:
         children.append(mom)
         children.append(dad)
@@ -77,8 +79,8 @@ def uniform_crossover(random, mom, dad, args):
 
     children = []
     if random.random() < crossover_rate:
-        mom_genes = mom.group_genes()
-        dad_genes = dad.group_genes()
+        mom_genes = mom.group_genes(remove_noops=False)
+        dad_genes = dad.group_genes(remove_noops=False)
         bro = copy.copy(dad_genes)
         sis = copy.copy(mom_genes)
 
@@ -88,9 +90,11 @@ def uniform_crossover(random, mom, dad, args):
                 sis[i] = d
 
         children.append(pyvotune.Genome(
-            get_id(), initial_state=dad.initial_state, init_parts=bro))
+            get_id(), initial_state=dad.initial_state, init_parts=bro,
+            parent=dad))
         children.append(pyvotune.Genome(
-            get_id(), initial_state=mom.initial_state, init_parts=sis))
+            get_id(), initial_state=mom.initial_state, init_parts=sis,
+            parent=mom))
     else:
         children.append(mom)
         children.append(dad)

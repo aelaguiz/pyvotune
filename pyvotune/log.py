@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from logging import getLogger, StreamHandler, Formatter, getLoggerClass, DEBUG
+from logging import getLogger, StreamHandler, Formatter, getLoggerClass, DEBUG, INFO
 import time
 
 logger_name = 'pyvotune'
@@ -34,17 +34,6 @@ def logger():
 def create_logger():
     Logger = getLoggerClass()
 
-    class DebugLogger(Logger):
-        def getEffectiveLevel(x):
-            if x.level == 0 and global_debug:
-                return DEBUG
-            return Logger.getEffectiveLevel(x)
-
-    class DebugHandler(StreamHandler):
-        pass
-        #def emit(x, record):
-            #StreamHandler.emit(x, record) if global_debug else None
-
     class DebugFormatter(Formatter):
         def format(self, record):
             return "%s %s [%s] >> %s" % (
@@ -53,7 +42,7 @@ def create_logger():
                 ("%s:%d@%s" % (record.filename, record.lineno, record.funcName)).ljust(30)[:30],
                 record.msg)
 
-    handler = DebugHandler()
+    handler = StreamHandler()
     handler.setLevel(DEBUG)
     handler.setFormatter(DebugFormatter())
     logger = getLogger(logger_name)
@@ -61,6 +50,11 @@ def create_logger():
     # just in case that was not a new logger, get rid of all the handlers
     # already attached to it.
     del logger.handlers[:]
-    logger.__class__ = DebugLogger
+
+    if global_debug:
+        logger.setLevel(DEBUG)
+    else:
+        logger.setLevel(INFO)
+
     logger.addHandler(handler)
     return logger

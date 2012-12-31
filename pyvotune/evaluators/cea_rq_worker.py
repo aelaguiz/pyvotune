@@ -1,6 +1,7 @@
 from rq import Queue, Worker, Connection
 from multiprocessing import Process
 import redis
+import logging
 
 from pyvotune.log import logger
 log = logger()
@@ -12,9 +13,10 @@ def _start_worker(con_str, queue):
 
         with Connection(con):
             worker = Worker(Queue(queue))
+            worker.log.level = 'WARNING'
             worker.work()
-    except:
-        log.exception("Worker excepted")
+    except Exception as e:
+        log.exception("Worker excepted %s" % e)
 
 
 def start_workers(processes, con_str, queue='pyvotune'):

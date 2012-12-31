@@ -17,8 +17,16 @@ log = logger()
 
 
 class Genome(list):
-    def __init__(self, genome_id, initial_state={}, init_parts=[]):
+    def __init__(self, genome_id, initial_state={}, init_parts=[], parent=None):
         self.genome_id = genome_id
+
+        if parent and parent.parent_id:
+            self.parent_id = [parent.genome_id] + parent.parent_id
+        elif parent:
+            self.parent_id = [parent.genome_id]
+        else:
+            self.parent_id = []
+
         self.initial_state = initial_state
         self.state = AssemblyState(initial_state)
 
@@ -93,7 +101,7 @@ class Genome(list):
                 #u"G{0}: Assembled successfully".format(self.genome_id))
         return True
 
-    def group_genes(self):
+    def group_genes(self, remove_noops=True):
         """
         Returns a list containing genes and the matching parameter values
         """
@@ -101,17 +109,26 @@ class Genome(list):
 
         # Split out into params and genes
         remaining_param_vals = [g for t, g in self if t == 'param']
-        active_genes = [g for t, g in self if t == 'gene' and g != NOOP_GENE]
+
+        if remove_noops:
+            active_genes = [g for t, g in self if t == 'gene' and g != NOOP_GENE]
+        else:
+            active_genes = [g for t, g in self if t == 'gene']
+
         num_active = len(active_genes)
 
         if 0 == num_active:
-            #log.debug(u"G{0}: Invalid - contains no active genes".format(
-                #self.genome_id))
+            log.debug(u"G{0}: Invalid - contains no active genes".format(
+                self.genome_id))
             return False
 
         self.state.clear()
 
         for i, gene in enumerate(active_genes):
+            if gene == NOOP_GENE:
+                to_assemble.append((gene, [], []))
+                continue
+
             # We want to ensure that the final gene is validat as a terminal, so when
             # we reach the end of the genome ensure the state is updated to reflect that
             if i == (num_active - 1):
@@ -123,7 +140,8 @@ class Genome(list):
                         #self.genome_id, gene, self.state))
                 return False
 
-            if not self.state.is_gene_placement_valid(gene):
+            # Placement tests are not valid when noops are enabled.
+            if remove_noops and not self.state.is_gene_placement_valid(gene):
                 #log.debug(
                     #u"G{0}: Invalid - Gene does not have correct placement {1} {2}".format(
                         #self.genome_id, gene, self.state))
@@ -172,11 +190,16 @@ class Genome(list):
         return cons(*unnamed_params, **named_params)
 
     def __repr__(self):
-        grouped_genes = self.group_genes()
+        grouped_genes = self.group_genes(False)
 
         strval = "Genome: %s\n" % self.genome_id
+        strval += "  Parents = %s\n" % (self.parent_id)
 
         for i, (gene, gene_params, gene_param_vals) in enumerate(grouped_genes):
+            if gene == NOOP_GENE:
+                strval += "\tGene %d: NOOP\n" % (i)
+                continue
+
             strval += "\tGene %d: %s\n" % (i, gene.__name__)
 
             for j, (param, val) in enumerate(zip(gene_params, gene_param_vals)):

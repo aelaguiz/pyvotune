@@ -44,8 +44,8 @@ def evaluator(candidate, args):
             individual, args['test_X'], args['test_y'])
     except Exception as e:
         try:
-            print "Exception:", e
-            print candidate
+            print "Exception:", e, candidate.genome_id
+            #print candidate
         except Exception as e:
             print "Exception in exception handler!!!"
             print e
@@ -128,6 +128,8 @@ if __name__ == '__main__':
     ]
     ea.selector = inspyred.ec.selectors.fitness_proportionate_selection
 
+    ea.archiver = pyvotune.archivers.pickle_wrap_archiver
+
     ea.observer = pyvotune.observers.stats_observer
 
     # Use PyvoTun variators
@@ -161,7 +163,7 @@ if __name__ == '__main__':
         rq_constr=con_str,
         rq_evaluator=evaluator,
         #mp_ncpus=12,
-        rq_timeout=300,
+        rq_timeout=10,
         rq_timeout_fitness=0,
 
         crossover_rate=0.5,
@@ -170,8 +172,9 @@ if __name__ == '__main__':
 
         tolerance=0.01,
         #max_time=300,
-
-        max_outstanding_individuals=1000,
+        
+        underlying_archiver=inspyred.ec.archivers.best_archiver,
+        archive_path='./archive.pkl',
 
         train_X=train_X,
         train_y=train_y,

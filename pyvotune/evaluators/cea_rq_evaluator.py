@@ -83,7 +83,6 @@ def dispatch_results(async_results, args):
     remaining_results = []
 
     running_count = 0
-    logger.debug("Checking {0} for results".format(len(async_results)))
     for idx, callback_fn, ind, job, start_time in list(async_results):
         job_dead = False
 
@@ -120,14 +119,15 @@ def dispatch_results(async_results, args):
             if job.status == Status.STARTED:
                 running_count += 1
                 if start_time is None:
-                    logger.debug("Job {0} - {1} started".format(
-                        idx, ind))
+                    #logger.debug("Job {0} - {1} started".format(
+                        #idx, ind))
                     start_time = time.time()
             #logger.debug("Continuing to wait for {0} after {1} seconds".format(
                 #idx, (time.time() - start_time)))
             remaining_results.append((idx, callback_fn, ind, job, start_time))
 
-    logger.debug("{0} jobs running".format(running_count))
+    logger.debug("{0} jobs running, {1} total".format(
+        running_count, len(async_results)))
 
     return defered, remaining_results
 
