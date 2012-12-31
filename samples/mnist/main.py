@@ -164,7 +164,7 @@ if __name__ == '__main__':
         rq_timeout=300,
         rq_timeout_fitness=0,
 
-        crossover_rate=0.3,
+        crossover_rate=0.5,
 
         mutation_rate=0.2,
 
@@ -178,7 +178,7 @@ if __name__ == '__main__':
         test_X=test_X,
         test_y=test_y,
 
-        nbh_grid_size=28,
+        nbh_grid_size=50,
         nbh_size=9,
         num_selected=6,
 
