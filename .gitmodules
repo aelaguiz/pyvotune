@@ -1,0 +1,3 @@
+[submodule "samples/lib/pymurder"]
+	path = samples/lib/pymurder
+	url = https://github.com/aelaguiz/pymurder.git
