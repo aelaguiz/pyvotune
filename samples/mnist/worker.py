@@ -144,7 +144,7 @@ if __name__ == '__main__':
     nprocs = int(multiprocessing.cpu_count() * 2)
     #nprocs = 4
 
-    con_str = "redis://ip-10-157-0-244.ec2.internal:6379/3"
+    con_str = sys.argv[1]
 
     # Start redis queue workers
     pyvotune.evaluators.cea_rq_worker.start_workers(processes=nprocs, con_str=con_str)
