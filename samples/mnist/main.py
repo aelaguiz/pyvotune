@@ -136,7 +136,7 @@ if __name__ == '__main__':
             rq_constr=con_str,
             rq_evaluator=evaluator,
             rq_timeout=app_args.eval_timeout,
-            rq_timeout_fitness=0,
+            rq_timeout_fitness=0.,
 
             crossover_rate=app_args.crossover_rate,
             mutation_rate=app_args.mutation_rate,

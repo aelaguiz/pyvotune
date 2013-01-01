@@ -6,8 +6,9 @@ ps aux | grep python | awk '{print $2}' | xargs kill
 
 if [ -e /mnt/mnist.txt ];
 then
-	mv /mnt/mnist.txt.bak
+	mv /mnt/mnist.txt /mnt/mnist.txt.bak
 fi
 
+cp -r /shared/pyvotune $BASE_DIR/
 cd $PYVOTUNE_DIR
 PYTHONPATH=. python samples/mnist/main.py -r redis://master:6379 -n $NUM_WORKERS -g $GRID_SIZE -s $NEIGHBORHOOD_SIZE -m $MUTATION_RATE -c $CROSSOVER_RATE -u $NUM_SAMPLES -t $EVAL_TIMEOUT -l $MAX_LENGTH -d -w >> /mnt/mnist.txt 2>&1

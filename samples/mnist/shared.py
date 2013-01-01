@@ -53,6 +53,8 @@ def evaluator(candidate, args):
 
 
 def _evaluator(candidate, display=False):
+    start_time = time.time()
+
     try:
         if not candidate.assemble():
             log.error("Candidate failed to assemble: %s" % candidate)
@@ -65,7 +67,6 @@ def _evaluator(candidate, display=False):
 
         skf = StratifiedKFold(y, 3, indices=False)
 
-        start_time = time.time()
         scores = []
         fold = 1
         for train_index, test_index in skf:
@@ -102,6 +103,7 @@ def _evaluator(candidate, display=False):
         return avg_f1
     except Exception as e:
         log.debug(
-            "Error evaluating genome %s" % (candidate.genome_id), exc_info=True)
+            "Error evaluating genome %s\nFailed after %s seconds" % (
+                candidate.genome_id, time.time() - start_time), exc_info=True)
 
         return 0.

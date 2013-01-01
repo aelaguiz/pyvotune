@@ -6,7 +6,7 @@ ps aux | grep python | awk '{print $2}' | xargs kill
 
 if [ -e /mnt/mnist.txt ];
 then
-	mv /mnt/mnist.txt.bak
+	mv /mnt/mnist.txt /mnt/mnist.txt.bak
 fi
 
 cd $PYVOTUNE_DIR

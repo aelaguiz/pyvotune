@@ -15,6 +15,8 @@ done
 echo "Flushing master redis"
 starcluster sshmaster $CLUSTER "redis-cli flushall"
 
+starcluster sshmaster $CLUSTER "cd /shared/pyvotune && git pull"
+
 for i in $NODES
 do
 	echo "Starting $i..."
