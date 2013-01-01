@@ -72,6 +72,8 @@ def _evaluator(candidate, display=False):
         pipeline = Pipeline([
             (str(i), s) for i, s in enumerate(candidate.assembled)])
 
+        log.debug("Evaluating %s fitness" % (candidate.genome_id))
+
         skf = StratifiedKFold(y, 3, indices=False)
 
         start_time = time.time()
@@ -95,10 +97,12 @@ def _evaluator(candidate, display=False):
 
         total_time = time.time() - start_time
 
-        log.debug("Train/test time: %s" % total_time)
+        log.debug("Evaluated %s Fitness %s in %ss" % (
+            candidate.genome_id, avg_f1, total_time))
 
         return avg_f1
     except Exception as e:
-        log.exception("Exception: %s %s" % (e, candidate.genome_id))
+        log.debug(
+            "Error evaluating genome %s" % (candidate.genome_id), exc_info=True)
 
         return 0.
