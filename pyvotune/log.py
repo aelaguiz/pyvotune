@@ -36,11 +36,12 @@ def create_logger():
 
     class DebugFormatter(Formatter):
         def format(self, record):
-            return "%s %s [%s] >> %s" % (
+            return "%s %s [%s] >> %s %s" % (
                 time.strftime("%H:%M:%S", time.localtime(record.created)),
                 ("%s %s" % (record.levelname, record.module)).ljust(15)[:15],
                 ("%s:%d@%s" % (record.filename, record.lineno, record.funcName)).ljust(30)[:30],
-                record.msg)
+                record.msg,
+                ("\nException: %s" % self.formatException(record.exc_info)) if record.exc_info else "")
 
     handler = StreamHandler()
     handler.setLevel(DEBUG)
