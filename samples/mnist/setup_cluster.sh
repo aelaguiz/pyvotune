@@ -14,4 +14,6 @@ cp -r /shared/pyvotune $BASE_DIR/
 cd $PYVOTUNE_DIR
 
 pip install -r requirements.txt
+
+pip uninstall rq -y
 pip install git+https://github.com/nvie/rq.git

@@ -48,9 +48,9 @@ def create_logger():
         'pyvotune.log', mode='a', maxBytes=1000000, backupCount=25)
 
     fileHandler.doRollover()
+    fileHandler.setFormatter(DebugFormatter())
 
     handler = StreamHandler()
-    handler.setLevel(DEBUG)
     handler.setFormatter(DebugFormatter())
     logger = getLogger(logger_name)
 

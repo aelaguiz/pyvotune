@@ -8,6 +8,7 @@ starcluster sshmaster $CLUSTER "/shared/$SETUP_SCRIPT"
 
 for i in $NODES
 do
-	starcluster sshnode $CLUSTER $i "/shared/$SETUP_SCRIPT"
+	echo "Setting up node $i"
+	echo starcluster sshnode $CLUSTER $i "/shared/$SETUP_SCRIPT"
 done
 
