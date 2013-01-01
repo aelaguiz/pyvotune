@@ -69,6 +69,7 @@ def get_args():
 
 if __name__ == '__main__':
     app_args = get_args()
+
     load_dataset(app_args.num_samples)
 
     pyvotune.set_debug(app_args.debug_mode)

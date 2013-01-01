@@ -3,6 +3,9 @@
 CLUSTER='lark'
 NODES="node001 node002 node003 node004"
 
+BASE_DIR=/mnt
+PYVOTUNE_DIR=$BASE_DIR/pyvotune
+
 MASTER_SETUP_SCRIPT=_setup_master.sh
 MASTER_SETUP=samples/mnist/$MASTER_SETUP_SCRIPT
 

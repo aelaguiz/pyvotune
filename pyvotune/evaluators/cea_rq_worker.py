@@ -13,7 +13,7 @@ def _start_worker(con_str, queue):
 
         with Connection(con):
             worker = Worker(Queue(queue))
-            worker.log.level = 'WARNING'
+            #worker.log.level = 'WARNING'
             worker.work()
     except Exception as e:
         log.exception("Worker excepted %s" % e)
