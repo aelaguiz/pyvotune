@@ -81,6 +81,8 @@ if __name__ == '__main__':
     # Start redis queue workers
     pyvotune.evaluators.cea_rq_worker.start_workers(processes=nprocs, con_str=con_str)
 
+    rng = random.Random()
+
     if not app_args.worker_mode:
         n_features = get_num_features()
 
@@ -91,17 +93,18 @@ if __name__ == '__main__':
             initial_state={
                 'sparse': False
             },
-            gene_pool=pyvotune.sklearn.get_classifiers(n_features) +
-            pyvotune.sklearn.get_decomposers(n_features) +
-            pyvotune.sklearn.get_image_features(n_features) +
-            pyvotune.sklearn.get_preprocessors(n_features),
+            gene_pool=pyvotune.sklearn.get_classifiers(n_features, rng) +
+            pyvotune.sklearn.get_decomposers(n_features, rng) +
+            pyvotune.sklearn.get_image_features(n_features, rng) +
+            pyvotune.sklearn.get_preprocessors(n_features, rng),
             max_length=app_args.max_length,
-            noop_frequency=0.2)
+            noop_frequency=0.2,
+            rng=rng)
 
         ####################################
         # Initialize Inspyred Genetic Algo #
         ####################################
-        ea = inspyred.ec.cEA(random.Random())
+        ea = inspyred.ec.cEA(rng)
         ea.logger = log
         ea.terminator = [
             #inspyred.ec.terminators.time_termination,

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from logging import getLogger, StreamHandler, Formatter, getLoggerClass, DEBUG, INFO
+import logging.handlers
 import time
 
 logger_name = 'pyvotune'
@@ -43,6 +44,11 @@ def create_logger():
                 record.msg,
                 ("\nException: %s" % self.formatException(record.exc_info)) if record.exc_info else "")
 
+    fileHandler = logging.handlers.RotatingFileHandler(
+        'pyvotune.log', mode='a', maxBytes=1000000, backupCount=25)
+
+    fileHandler.doRollover()
+
     handler = StreamHandler()
     handler.setLevel(DEBUG)
     handler.setFormatter(DebugFormatter())
@@ -58,4 +64,5 @@ def create_logger():
         logger.setLevel(INFO)
 
     logger.addHandler(handler)
+    logger.addHandler(fileHandler)
     return logger

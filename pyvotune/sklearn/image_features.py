@@ -17,7 +17,7 @@ def patchsize_generator(rng, min_width, max_width, min_height, max_height):
         rng.randrange(min_width, max_width + 1), rng.randrange(min_height, max_height + 1))
 
 
-def get_image_features(n_features):
+def get_image_features(n_features, rng):
     pyvotune.dense_input(PatchExtractor)
     pyvotune.non_terminal(PatchExtractor)
     pyvotune.param(
@@ -37,6 +37,6 @@ def get_image_features(n_features):
             'max_height': 200
         },
         name="patch_size")(PatchExtractor)
-    pyvotune.pint(range=(1, 100), name='max_patches')(PatchExtractor)
+    pyvotune.pint(range=(1, 100), name='max_patches', rng=rng)(PatchExtractor)
 
     return [PatchExtractor]

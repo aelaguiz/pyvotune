@@ -17,11 +17,14 @@ starcluster sshmaster $CLUSTER "redis-cli flushall"
 
 starcluster sshmaster $CLUSTER "cd /shared/pyvotune && git pull"
 
+echo "Starting master..."
+starcluster sshmaster $CLUSTER "tmux new -d -s master /shared/$START_MASTER_SCRIPT"
+
+echo "Pausing"
+sleep 5
+
 for i in $NODES
 do
 	echo "Starting $i..."
 	starcluster sshnode $CLUSTER $i "tmux new -d -s worker /shared/$START_NODE_SCRIPT"
 done
-
-echo "Starting master..."
-starcluster sshmaster $CLUSTER "tmux new -d -s master /shared/$START_MASTER_SCRIPT"

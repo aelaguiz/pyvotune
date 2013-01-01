@@ -105,14 +105,14 @@ class pconst(param):
     @pyvotune.pconst()
     """
     def __init__(
-            self, value, name=None):
+            self, value, rng=random, name=None):
 
         param.__init__(
             self, "const", const_checker, {
                 'const_value': value
             }, const_generator, {
                 'const_value': value
-            }, name=name)
+            }, rng, name=name)
 
 
 class pbool(param):
