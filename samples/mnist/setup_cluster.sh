@@ -11,9 +11,10 @@ pip install paver
 python setup.py install
 
 cp -r /shared/pyvotune $BASE_DIR/
+
 cd $PYVOTUNE_DIR
-
 pip install -r requirements.txt
-
 pip uninstall rq -y
-pip install git+https://github.com/nvie/rq.git
+
+mv /usr/local/lib/python2.7/dist-packages/rq-0.3.0-py2.7.egg-info/ /tmp/.
+pip install -U git+https://github.com/nvie/rq.git

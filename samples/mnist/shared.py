@@ -65,16 +65,23 @@ def _evaluator(candidate, display=False):
 
         log.debug("Evaluating %s fitness" % (candidate.genome_id))
 
+        skf_start = time.time()
+
         skf = StratifiedKFold(y, 3, indices=False)
 
         scores = []
         fold = 1
         for train_index, test_index in skf:
+            skf_end = time.time()
+            mask_start = time.time()
+
             train_X, test_X = X[train_index], X[test_index]
             train_y, test_y = y[train_index], y[test_index]
 
-            log.debug("Genome %s Fold %d Training on %s samples" % (
-                candidate.genome_id, fold, len(train_X)))
+            log.debug("Genome %s Fold %d Training on %s samples (%s skf, %s masking)" % (
+                candidate.genome_id, fold, len(train_X),
+                (skf_end - skf_start),
+                (time.time() - mask_start)))
 
             pipeline.fit(train_X, train_y)
             observed_y = pipeline.predict(test_X)
