@@ -15,6 +15,7 @@ import pyvotune.variators
 import pyvotune.evaluators
 import pyvotune.archivers
 import pyvotune.theano
+import pyvotune.feature_extractors
 
 __version__ = '0.0.1'
 __author__ = 'Amir Elaguizy'
