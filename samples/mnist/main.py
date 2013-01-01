@@ -11,7 +11,7 @@ import redis
 import time
 
 import multiprocessing
-from shared import load_dataset, generator, evaluator, _evaluator, get_num_features
+from shared import load_dataset, generator, evaluator, _evaluator, get_gene_pool
 
 
 log = pyvotune.log.logger()
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     pyvotune.evaluators.cea_rq_worker.start_workers(processes=nprocs, con_str=con_str)
 
     if not app_args.worker_mode:
-        n_features = get_num_features()
+        gene_pool = get_gene_pool()
 
         #################################
         # Initialize PyvoTune Generator #
@@ -90,10 +90,7 @@ if __name__ == '__main__':
             initial_state={
                 'sparse': False
             },
-            gene_pool=pyvotune.sklearn.get_classifiers(n_features) +
-            pyvotune.sklearn.get_decomposers(n_features) +
-            pyvotune.sklearn.get_image_features(n_features) +
-            pyvotune.sklearn.get_preprocessors(n_features),
+            gene_pool=gene_pool,
             max_length=app_args.max_length,
             noop_frequency=0.2)
 

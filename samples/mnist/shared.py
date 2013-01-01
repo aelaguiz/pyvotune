@@ -35,6 +35,17 @@ def get_num_features():
     return X.shape[1]
 
 
+def get_gene_pool():
+    n_features = get_num_features()
+
+    gene_pool = pyvotune.sklearn.get_classifiers(n_features) +\
+        pyvotune.sklearn.get_decomposers(n_features) +\
+        pyvotune.sklearn.get_image_features(n_features) +\
+        pyvotune.sklearn.get_preprocessors(n_features)
+
+    return gene_pool
+
+
 def generator(random, args):
     gen = args['pyvotune_generator']
 
