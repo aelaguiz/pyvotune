@@ -44,8 +44,11 @@ def create_logger():
                 record.msg,
                 ("\nException: %s" % self.formatException(record.exc_info)) if record.exc_info else "")
 
+    import socket
+    hostname = socket.gethostname()
+
     fileHandler = logging.handlers.RotatingFileHandler(
-        'pyvotune.log', mode='a', maxBytes=1000000, backupCount=25)
+        'pyvotune.%s.log' % hostname, mode='a', maxBytes=1000000, backupCount=25)
 
     fileHandler.doRollover()
     fileHandler.setFormatter(DebugFormatter())
