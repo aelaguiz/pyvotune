@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /home/pyvotune
+source `dirname $0`/globals.sh
 
 ps aux | grep python | awk '{print $2}' | xargs kill
 
@@ -9,4 +9,5 @@ then
 	mv /mnt/mnist.txt.bak
 fi
 
-PYTHONPATH=. python samples/mnist/main.py -r redis://master -n 64 -g 0 -s 0 -m 0 -c 0 -t 0 -d -w  >> /mnt/mnist.txt 2>&1
+cd /home/pyvotune
+PYTHONPATH=. python samples/mnist/main.py -r redis://master:6379 -n $NUM_WORKERS -g $GRID_SIZE -s $NEIGHBORHOOD_SIZE -m $MUTATION_RATE -c $CROSSOVER_RATE -u $NUM_SAMPLES -t $EVAL_TIMEOUT -d  >> /mnt/mnist.txt 2>&1

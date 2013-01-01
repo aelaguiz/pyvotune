@@ -1,15 +1,25 @@
 #!/bin/bash
 
-CLUSTER='lark'
-NODES="node001"
-START_NODE_SCRIPT=_start_node.sh
-START_NODE=samples/mnist/$START_NODE_SCRIPT
+source `dirname $0`/globals.sh
+source `dirname $0`/push.sh
+
+echo "Killing master"
+starcluster sshmaster $CLUSTER "tmux kill-session -t master"
 
 for i in $NODES
 do
+	echo "Killing $i..."
+	starcluster sshnode $CLUSTER $i "tmux kill-session -t worker"
+done
+
+echo "Flushing master redis"
+starcluster sshmaster $CLUSTER "redis-cli flushall"
+
+for i in $NODES
+do
+	echo "Starting $i..."
 	starcluster sshnode $CLUSTER $i "tmux new -d -s worker /shared/$START_NODE_SCRIPT"
 done
 
-starcluster sshmaster $CLUSTER "tmux new -d -s worker /shared/$START_MASTER_SCRIPT"
-#starcluster sshmaster $CLUSTER "/shared/$SETUP_SCRIPT"
-
+echo "Starting master..."
+starcluster sshmaster $CLUSTER "tmux new -d -s master /shared/$START_MASTER_SCRIPT"
