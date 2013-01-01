@@ -46,6 +46,10 @@ def get_args():
                         default=None, required=False,
                         help="Maximum number of samples to test with")
 
+    parser.add_argument('-l', '--max_length', dest='max_length', type=int,
+                        default=None, required=False,
+                        help="Maximum length of genome")
+
     parser.add_argument('-m', '--mutation_rate', dest='mutation_rate', type=float,
                         default=None, required=True,
                         help="Mutation rate (0-1.0)")
@@ -90,7 +94,7 @@ if __name__ == '__main__':
             pyvotune.sklearn.get_decomposers(n_features) +
             pyvotune.sklearn.get_image_features(n_features) +
             pyvotune.sklearn.get_preprocessors(n_features),
-            max_length=4,
+            max_length=app_args.max_length,
             noop_frequency=0.2)
 
         ####################################
