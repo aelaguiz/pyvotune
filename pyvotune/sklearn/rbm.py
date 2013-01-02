@@ -4,10 +4,6 @@ import pyvotune
 
 from pyvotune.feature_extractors import RBMFeatureExtractor
 
-        #learning_rate=0.1, training_epochs=15,
-            #batch_size=20, n_resamples=10,
-            #n_hidden=500):
-
 
 def get_rbm(n_features):
     pyvotune.dense_input(RBMFeatureExtractor)

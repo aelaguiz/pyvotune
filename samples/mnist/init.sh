@@ -3,11 +3,12 @@
 source `dirname $0`/globals.sh
 source `dirname $0`/push.sh
 
-starcluster sshmaster $CLUSTER "/shared/$MASTER_SETUP_SCRIPT"
-starcluster sshmaster $CLUSTER "/shared/$SETUP_SCRIPT"
+starcluster sshmaster $CLUSTER "$BASE_DIR/$MASTER_SETUP_ROOT_SCRIPT"
+starcluster sshmaster $CLUSTER -u $CLUSTER_USER "$BASE_DIR/$MASTER_SETUP_SCRIPT"
 
-for i in $NODES
-do
-	starcluster sshnode $CLUSTER $i "/shared/$SETUP_SCRIPT"
-done
+#for i in $NODES
+#do
+	#echo "Setting up node $i"
+	#starcluster sshnode $CLUSTER $i "/shared/$SETUP_SCRIPT"
+#done
 

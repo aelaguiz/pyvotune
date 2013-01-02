@@ -1,25 +1,29 @@
 #!/bin/bash
 
 source `dirname $0`/globals.sh
-source `dirname $0`/push.sh
 
 echo "Killing master"
-starcluster sshmaster $CLUSTER "tmux kill-session -t master"
+starcluster sshmaster $CLUSTER -u $CLUSTER_USER "tmux kill-session -t master"
 
 for i in $NODES
 do
 	echo "Killing $i..."
-	starcluster sshnode $CLUSTER $i "tmux kill-session -t worker"
+	starcluster sshnode $CLUSTER $i -u $CLUSTER_USER "tmux kill-session -t worker"
 done
 
 echo "Flushing master redis"
-starcluster sshmaster $CLUSTER "redis-cli flushall"
+starcluster sshmaster $CLUSTER -u $CLUSTER_USER "redis-cli flushall"
+
+starcluster sshmaster $CLUSTER -u $CLUSTER_USER "cd $PYVOTUNE_DIR && git pull"
+
+echo "Starting master..."
+starcluster sshmaster $CLUSTER -u $CLUSTER_USER "tmux new -d -s master $PYVOTUNE_DIR/$START_MASTER"
+
+echo "Pausing"
+sleep 5
 
 for i in $NODES
 do
 	echo "Starting $i..."
-	starcluster sshnode $CLUSTER $i "tmux new -d -s worker /shared/$START_NODE_SCRIPT"
+	starcluster sshnode $CLUSTER $i -u $CLUSTER_USER "tmux new -d -s worker $PYVOTUNE_DIR/$START_NODE"
 done
-
-echo "Starting master..."
-starcluster sshmaster $CLUSTER "tmux new -d -s master /shared/$START_MASTER_SCRIPT"

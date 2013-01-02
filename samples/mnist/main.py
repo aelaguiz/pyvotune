@@ -69,6 +69,7 @@ def get_args():
 
 if __name__ == '__main__':
     app_args = get_args()
+
     load_dataset(app_args.num_samples)
 
     pyvotune.set_debug(app_args.debug_mode)
@@ -80,8 +81,10 @@ if __name__ == '__main__':
     # Start redis queue workers
     pyvotune.evaluators.cea_rq_worker.start_workers(processes=nprocs, con_str=con_str)
 
+    rng = random.Random()
+
     if not app_args.worker_mode:
-        gene_pool = get_gene_pool()
+        gene_pool = get_gene_pool(rng)
 
         #################################
         # Initialize PyvoTune Generator #
@@ -92,12 +95,13 @@ if __name__ == '__main__':
             },
             gene_pool=gene_pool,
             max_length=app_args.max_length,
-            noop_frequency=0.2)
+            noop_frequency=0.2,
+            rng=rng)
 
         ####################################
         # Initialize Inspyred Genetic Algo #
         ####################################
-        ea = inspyred.ec.cEA(random.Random())
+        ea = inspyred.ec.cEA(rng)
         ea.logger = log
         ea.terminator = [
             #inspyred.ec.terminators.time_termination,
@@ -132,7 +136,7 @@ if __name__ == '__main__':
             rq_constr=con_str,
             rq_evaluator=evaluator,
             rq_timeout=app_args.eval_timeout,
-            rq_timeout_fitness=0,
+            rq_timeout_fitness=0.,
 
             crossover_rate=app_args.crossover_rate,
             mutation_rate=app_args.mutation_rate,

@@ -2,8 +2,7 @@
 
 source `dirname $0`/globals.sh
 
-starcluster put $CLUSTER `dirname $0`/globals.sh /shared/.
-starcluster put $CLUSTER $MASTER_SETUP /shared/.
-starcluster put $CLUSTER $SETUP /shared/.
-starcluster put $CLUSTER $START_NODE /shared/.
-starcluster put $CLUSTER $START_MASTER /shared/.
+starcluster put $CLUSTER -u $CLUSTER_USER `dirname $0`/globals.sh $BASE_DIR/.
+starcluster put $CLUSTER -u $CLUSTER_USER $MASTER_SETUP $BASE_DIR/.
+starcluster put $CLUSTER -u $CLUSTER_USER $MASTER_SETUP_ROOT $BASE_DIR/.
+starcluster put $CLUSTER -u $CLUSTER_USER ~/.ssh/id_rsa.pub /home/$CLUSTER_USER/.ssh/.
