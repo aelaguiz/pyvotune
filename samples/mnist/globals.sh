@@ -1,13 +1,20 @@
 #!/bin/bash
 
 CLUSTER='lark'
-NODES="node001 node002 node003 node004"
+CLUSTER_USER='ubuntu'
+NODES="node001 node002 node003 node004 node005"
 
-BASE_DIR=/mnt
+INSPYRED_GIT=https://github.com/aelaguiz/inspyred.git
+PYVOTUNE_GIT=https://github.com/aelaguiz/pyvotune.git
+
+BASE_DIR=/home/ubuntu
 PYVOTUNE_DIR=$BASE_DIR/pyvotune
 
 MASTER_SETUP_SCRIPT=_setup_master.sh
 MASTER_SETUP=samples/mnist/$MASTER_SETUP_SCRIPT
+
+MASTER_SETUP_ROOT_SCRIPT=_setup_master_root.sh
+MASTER_SETUP_ROOT=samples/mnist/$MASTER_SETUP_ROOT_SCRIPT
 
 SETUP_SCRIPT=setup_cluster.sh
 SETUP=samples/mnist/$SETUP_SCRIPT
