@@ -84,13 +84,7 @@ if __name__ == '__main__':
     con_str = app_args.redis_path
 
     rng = random.Random()
-
-    n_features = get_num_features()
-
-    gene_pool = pyvotune.sklearn.get_classifiers(n_features, rng) +\
-        pyvotune.sklearn.get_decomposers(n_features, rng) +\
-        pyvotune.sklearn.get_image_features(n_features, rng) +\
-        pyvotune.sklearn.get_preprocessors(n_features, rng)
+    gene_pool = get_gene_pool(rng)
 
     if app_args.validate:
         validate_models(app_args.validate[0])
@@ -100,7 +94,6 @@ if __name__ == '__main__':
     pyvotune.evaluators.cea_rq_worker.start_workers(processes=nprocs, con_str=con_str)
 
     if not app_args.worker_mode:
-        gene_pool = get_gene_pool(rng)
 
         #################################
         # Initialize PyvoTune Generator #
