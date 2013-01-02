@@ -2,7 +2,7 @@
 
 CLUSTER='lark'
 CLUSTER_USER='ubuntu'
-NODES="node001 node002 node003 node004 node005"
+NODES="node001 node002 node003 node004"
 
 INSPYRED_GIT=https://github.com/aelaguiz/inspyred.git
 PYVOTUNE_GIT=https://github.com/aelaguiz/pyvotune.git
@@ -30,7 +30,7 @@ NUM_SAMPLES=42000
 CROSSOVER_RATE=0.5
 MUTATION_RATE=0.3
 NEIGHBORHOOD_SIZE=2
-GRID_SIZE=10
-NUM_WORKERS=32
-EVAL_TIMEOUT=90
-MAX_LENGTH=4
+GRID_SIZE=50
+NUM_WORKERS=64
+EVAL_TIMEOUT=300
+MAX_LENGTH=5
