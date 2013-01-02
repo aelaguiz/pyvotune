@@ -82,6 +82,9 @@ if __name__ == '__main__':
     nprocs = app_args.num_processes
 
     con_str = app_args.redis_path
+    rng = random.Random()
+
+    gene_pool = get_gene_pool(rng)
 
     if app_args.validate:
         validate_models(app_args.validate[0])
@@ -90,11 +93,7 @@ if __name__ == '__main__':
     # Start redis queue workers
     pyvotune.evaluators.cea_rq_worker.start_workers(processes=nprocs, con_str=con_str)
 
-    rng = random.Random()
-
     if not app_args.worker_mode:
-        gene_pool = get_gene_pool(rng)
-
         #################################
         # Initialize PyvoTune Generator #
         #################################

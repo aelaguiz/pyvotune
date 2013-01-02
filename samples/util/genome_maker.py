@@ -4,6 +4,7 @@ import pyvotune
 import collections
 import pyvotune.sklearn
 import random
+import copy
 import sys
 
 log = pyvotune.log.logger()
@@ -64,19 +65,37 @@ if __name__ == '__main__':
         parent = gen.generate(max_retries=150)
         parents.append(parent)
 
-    log.debug("Done generating parents")
-
-    rep = pyvotune.util.side_by_side(parents, 50)
-    log.debug("\nParents:\n%s\n" % rep)
+    first_gen_paernts = copy.copy(parents)
 
     stats = collections.defaultdict(int)
 
-    for i in range(2):
-        children = reproduce(parents, variators, rng, args)
-        child_rep = pyvotune.util.side_by_side(children, 50)
-        log.debug("\nChildren:\n%s\n" % child_rep)
+    for j in range(10):
+        log.info("GENERATION %s" % j)
 
-        stats = pyvotune.util.child_stats(parents, children, stats)
+        orig_parents = copy.copy(parents)
+
+        #log.debug("Done generating parents")
+
+        rep = pyvotune.util.side_by_side(parents, 50)
+        #log.debug("\nParents:\n%s\n" % rep)
+
+        reproduction_parents = random.sample(parents, 2)
+
+        for i in range(100):
+            children = reproduce(reproduction_parents, variators, rng, args)
+            child_rep = pyvotune.util.side_by_side(children, 50)
+            #log.debug("\nChildren:\n%s\n" % child_rep)
+
+            stats = pyvotune.util.child_stats(parents, children, stats)
+
+        if orig_parents != parents:
+            log.error("PARENTS CHANGED")
+
+        parents += children
 
     for key, value in stats.iteritems():
         log.debug("%s: %s" % (key, value))
+
+
+    #rep = pyvotune.util.side_by_side(parents, 50)
+    #log.debug("\nParents:\n%s\n" % rep)

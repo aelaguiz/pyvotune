@@ -1,5 +1,8 @@
 import itertools
 
+from pyvotune.log import logger
+log = logger()
+
 
 def side_by_side(genomes, genome_max_width=40, screen_width=150):
     genome_padding = 3
@@ -53,6 +56,8 @@ def child_stats(parents, children, stats):
             parent = child
 
         if parent == child:
+            #log.debug("Child %s same as parent %s" % (
+                #child, parent))
             stats['num_same'] += 1
 
         if len(child) > len(parent):
