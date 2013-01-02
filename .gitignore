@@ -6,3 +6,6 @@ venv
 *.egg-info
 dist
 build
+*.log
+*.log.*
+*.pkl
