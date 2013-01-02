@@ -28,3 +28,5 @@ python setup.py install
 cd $PYVOTUNE_DIR
 pip install -r requirements.txt
 pip install git+https://github.com/nvie/rq.git
+pip install redis
+pip install hiredis
