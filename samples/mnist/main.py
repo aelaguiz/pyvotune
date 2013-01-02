@@ -11,7 +11,8 @@ import redis
 import time
 
 import multiprocessing
-from shared import load_dataset, generator, evaluator, _evaluator, get_gene_pool
+from shared import load_dataset, generator, evaluator, _evaluator,\
+    get_gene_pool, validate_models
 
 
 log = pyvotune.log.logger()
@@ -65,6 +66,10 @@ def get_args():
     parser.add_argument('-w', '--worker-mode', dest='worker_mode', default=False,
                         action='store_true', required=False, help="Enable worker mode")
 
+    parser.add_argument('-v', '--validate', dest='validate', default=None,
+                        nargs=1, required=False,
+                        help="Validate a given model")
+
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -77,6 +82,10 @@ if __name__ == '__main__':
     nprocs = app_args.num_processes
 
     con_str = app_args.redis_path
+
+    if app_args.validate:
+        validate_models(app_args.validate[0])
+        sys.exit(1)
 
     # Start redis queue workers
     pyvotune.evaluators.cea_rq_worker.start_workers(processes=nprocs, con_str=con_str)

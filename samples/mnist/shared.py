@@ -10,6 +10,11 @@ from sklearn.cross_validation import StratifiedKFold
 
 import pyvotune
 
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
 from loader import load_mnist
 
 log = pyvotune.log.logger()
@@ -40,9 +45,9 @@ def get_gene_pool(rng):
 
     gene_pool = pyvotune.sklearn.get_classifiers(n_features, rng) +\
         pyvotune.sklearn.get_preprocessors(n_features, rng) + \
+        pyvotune.sklearn.get_decomposers(n_features, rng) +\
+        pyvotune.sklearn.get_image_features(n_features, rng) +\
         pyvotune.sklearn.get_rbm(n_features, rng)
-        #pyvotune.sklearn.get_decomposers(n_features, rng) +\
-        #pyvotune.sklearn.get_image_features(n_features, rng) +\
 
     return gene_pool
 
@@ -126,3 +131,14 @@ def _evaluator(candidate, display=False):
                 candidate.genome_id, time.time() - start_time), exc_info=True)
 
         return 0.
+
+
+def validate_models(model_path):
+    f = open(model_path, "rb")
+    models = pickle.load(f)
+    f.close()
+
+    for model in models:
+        log.info("Testing model: %s" % model.candidate)
+
+        _evaluator(model.candidate, display=False)
