@@ -5,4 +5,4 @@ from pyvotune.sklearn.decomposers import get_decomposers
 from pyvotune.sklearn.preprocessors import get_preprocessors
 from pyvotune.sklearn.classifiers import get_classifiers
 from pyvotune.sklearn.image_features import get_image_features
-from pyvotune.sklearn.rbm import get_rbm
+from pyvotune.sklearn.rbm import get_pyrbm, get_theano

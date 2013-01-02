@@ -84,8 +84,6 @@ if __name__ == '__main__':
     con_str = app_args.redis_path
     rng = random.Random()
 
-    gene_pool = get_gene_pool(rng)
-
     rng = random.Random()
     gene_pool = get_gene_pool(rng)
 
