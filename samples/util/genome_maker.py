@@ -26,6 +26,11 @@ if __name__ == '__main__':
     n_features = 28 * 28
 
     rng = random.Random()
+    gene_pool = pyvotune.sklearn.get_classifiers(n_features, rng) +\
+        pyvotune.sklearn.get_preprocessors(n_features, rng) + \
+        pyvotune.sklearn.get_decomposers(n_features, rng) +\
+        pyvotune.sklearn.get_image_features(n_features, rng) +\
+        pyvotune.sklearn.get_rbm(n_features, rng)
 
     #################################
     # Initialize PyvoTune Generator #
@@ -34,10 +39,7 @@ if __name__ == '__main__':
         initial_state={
             'sparse': False
         },
-        gene_pool=pyvotune.sklearn.get_classifiers(n_features) +
-        pyvotune.sklearn.get_decomposers(n_features) +
-        pyvotune.sklearn.get_image_features(n_features) +
-        pyvotune.sklearn.get_preprocessors(n_features),
+        gene_pool=gene_pool,
         max_length=4,
         noop_frequency=0.2,
         rng=rng)

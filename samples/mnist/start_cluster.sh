@@ -22,8 +22,4 @@ starcluster sshmaster $CLUSTER -u $CLUSTER_USER "tmux new -d -s master $PYVOTUNE
 echo "Pausing"
 sleep 5
 
-for i in $NODES
-do
-	echo "Starting $i..."
-	starcluster sshnode $CLUSTER $i -u $CLUSTER_USER "tmux new -d -s worker $PYVOTUNE_DIR/$START_NODE"
-done
+`dirname $0`/start_nodes.sh

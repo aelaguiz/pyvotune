@@ -27,7 +27,7 @@ global_T = None
 global_RandomStreams = None
 
 
-class RBMFeatureExtractor(BaseEstimator, TransformerMixin):
+class TheanoRBMFeatureExtractor(BaseEstimator, TransformerMixin):
     def __init__(
         self,
         learning_rate=0.1, training_epochs=15,
@@ -40,7 +40,7 @@ class RBMFeatureExtractor(BaseEstimator, TransformerMixin):
         self.n_hidden = n_hidden
         self.n_resamples = n_resamples
 
-        super(RBMFeatureExtractor, self).__init__()
+        super(TheanoRBMFeatureExtractor, self).__init__()
 
     def fit(self, X, y=None):
         global global_theano
