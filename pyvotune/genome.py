@@ -182,11 +182,12 @@ class Genome(list):
                 'factory_fn' in gene._pyvotune_assembly_params:
             cons = gene._pyvotune_assembly_params['factory_fn']
 
-        #log.debug(u"G{0}: Instantiating gene {1} with {2}".format(
-            #self.genome_id, gene, param_vals))
-
         unnamed_params = [v for p, v in zip(gene_params, param_vals) if p.name is None]
         named_params = {p.name: v for p, v in zip(gene_params, param_vals) if p.name}
+
+        #log.debug(u"G{0}: Instantiating gene {1} with {2}, {3}".format(
+            #self.genome_id, gene, unnamed_params, named_params))
+
         return cons(*unnamed_params, **named_params)
 
     def __repr__(self):
@@ -206,6 +207,13 @@ class Genome(list):
                 strval += "\t\tParam %d: %s - %s\n" % (j, param, val)
 
         return strval
+
+    def __eq__(self, other):
+        for val1, val2 in zip(self, other):
+            if val1 != val2:
+                return False
+
+        return True
 
     def get_gene_params(self, gene):
         if not hasattr(gene, '_pyvotune_params'):

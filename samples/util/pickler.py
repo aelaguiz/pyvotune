@@ -7,6 +7,11 @@ import random
 import copy
 import sys
 
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
 log = pyvotune.log.logger()
 
 
@@ -58,42 +63,16 @@ if __name__ == '__main__':
         pyvotune.variators.n_point_crossover
     ]
 
-    parents = []
-    for i in range(2):
-        parent = gen.generate(max_retries=150)
-        parents.append(parent)
+    genome = gen.generate(max_retries=150)
 
-    first_gen_paernts = copy.copy(parents)
+    print genome
+    p_genome = pickle.dumps(genome)
+    print p_genome
+    u_genome = pickle.loads(p_genome)
 
-    stats = collections.defaultdict(int)
+    print pyvotune.util.side_by_side([genome, u_genome], 50)
 
-    for j in range(10):
-        log.info("GENERATION %s" % j)
-
-        orig_parents = copy.copy(parents)
-
-        #log.debug("Done generating parents")
-
-        rep = pyvotune.util.side_by_side(parents, 50)
-        #log.debug("\nParents:\n%s\n" % rep)
-
-        reproduction_parents = random.sample(parents, 2)
-
-        for i in range(100):
-            children = reproduce(reproduction_parents, variators, rng, args)
-            child_rep = pyvotune.util.side_by_side(children, 50)
-            #log.debug("\nChildren:\n%s\n" % child_rep)
-
-            stats = pyvotune.util.child_stats(parents, children, stats)
-
-        if orig_parents != parents:
-            log.error("PARENTS CHANGED")
-
-        parents += children
-
-    for key, value in stats.iteritems():
-        log.debug("%s: %s" % (key, value))
-
-
-    #rep = pyvotune.util.side_by_side(parents, 50)
-    #log.debug("\nParents:\n%s\n" % rep)
+    if genome == u_genome:
+        print "EQUAL"
+    else:
+        print "NOT EQUAL"
