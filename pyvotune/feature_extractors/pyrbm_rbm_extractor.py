@@ -69,7 +69,7 @@ class PyRBMFeatureExtractor(BaseEstimator, TransformerMixin):
 
         for i in range(self.n_training_epochs):
             for j, batch in enumerate(chunks(X, self.batch_size)):
-                log.debug("Training rbm on epoch %s batch %s" % (i, j))
+                #log.debug("Training rbm on epoch %s batch %s" % (i, j))
                 trainer.learn(batch, learning_rate=self.learning_rate)
 
         return self
@@ -77,7 +77,7 @@ class PyRBMFeatureExtractor(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):
         out = self.rbm.hidden_expectation(X)
 
-        log.debug("Result on rbm {0}".format(out))
+        #log.debug("Result on rbm {0}".format(out))
 
 
         return out
