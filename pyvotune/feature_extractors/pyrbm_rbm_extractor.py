@@ -42,6 +42,8 @@ class PyRBMFeatureExtractor(BaseEstimator, TransformerMixin):
             l2_weight=0.001, sparsity=0.1,
             n_training_epochs=10,
             scale=0.001,
+            reconstruction=True,
+            n_gibbs=10,
             batch_size=20):
 
         self.n_hidden = n_hidden
@@ -53,6 +55,8 @@ class PyRBMFeatureExtractor(BaseEstimator, TransformerMixin):
         self.batch_size = batch_size
         self.scale = scale
         self.n_training_epochs = n_training_epochs
+        self.reconstruction = reconstruction
+        self.n_gibbs = n_gibbs
 
 
         super(PyRBMFeatureExtractor, self).__init__()
@@ -75,9 +79,7 @@ class PyRBMFeatureExtractor(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X, y=None):
-        out = self.rbm.hidden_expectation(X)
-
-        #log.debug("Result on rbm {0}".format(out))
-
-
-        return out
+        if self.reconstruction:
+            return self.rbm.reconstruct(X, self.n_gibbs)
+        else:
+            return self.rbm.hidden_expectation(X)
