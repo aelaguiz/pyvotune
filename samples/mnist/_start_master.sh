@@ -4,11 +4,6 @@ source `dirname $0`/globals.sh
 
 ps aux | grep python | awk '{print $2}' | xargs kill
 
-if [ -e /mnt/mnist.txt ];
-then
-	mv /mnt/mnist.txt /mnt/mnist.txt.bak
-fi
-
 cd $BASE_DIR
 source venv/bin/activate
 cd $PYVOTUNE_DIR
