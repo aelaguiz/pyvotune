@@ -86,6 +86,9 @@ if __name__ == '__main__':
 
     gene_pool = get_gene_pool(rng)
 
+    rng = random.Random()
+    gene_pool = get_gene_pool(rng)
+
     if app_args.validate:
         validate_models(app_args.validate[0])
         sys.exit(1)
