@@ -6,6 +6,8 @@ source `dirname $0`/push.sh
 starcluster sshmaster $CLUSTER "$BASE_DIR/$MASTER_SETUP_ROOT_SCRIPT"
 starcluster sshmaster $CLUSTER -u $CLUSTER_USER "$BASE_DIR/$MASTER_SETUP_SCRIPT"
 
+starcluster sshnode $CLUSTER node001 -u $CLUSTER_USER "$BASE_DIR/$VENV_SETUP_SCRIPT"
+
 #for i in $NODES
 #do
 	#echo "Setting up node $i"
