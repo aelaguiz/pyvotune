@@ -13,6 +13,7 @@ pip install paver
 python setup.py install
 
 cd $PYVOTUNE_DIR
+git pull
 pip install -r requirements.txt
 pip install git+https://github.com/nvie/rq.git
 pip install redis

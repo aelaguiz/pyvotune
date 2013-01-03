@@ -31,7 +31,7 @@ if __name__ == '__main__':
         pyvotune.sklearn.get_preprocessors(n_features, rng) + \
         pyvotune.sklearn.get_decomposers(n_features, rng) +\
         pyvotune.sklearn.get_image_features(n_features, rng) +\
-        pyvotune.sklearn.get_rbm(n_features, rng)
+        pyvotune.sklearn.get_pyrbm(n_features, rng)
 
     #################################
     # Initialize PyvoTune Generator #
