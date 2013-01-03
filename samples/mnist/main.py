@@ -12,7 +12,7 @@ import time
 
 import multiprocessing
 from shared import load_dataset, generator, evaluator, _evaluator,\
-    get_gene_pool, validate_models
+    get_gene_pool, validate_models, classify_models
 
 
 log = pyvotune.log.logger()
@@ -70,6 +70,10 @@ def get_args():
                         nargs=1, required=False,
                         help="Validate a given model")
 
+    parser.add_argument('-k', '--classify', dest='classify', default=None,
+                        nargs=1, required=False,
+                        help="Save classification into given output file")
+
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -87,7 +91,14 @@ if __name__ == '__main__':
     rng = random.Random()
     gene_pool = get_gene_pool(rng)
 
-    if app_args.validate:
+    if app_args.classify:
+        if not app_args.validate:
+            log.error("Need path to model -v")
+            sys.exit(0)
+
+        classify_models(app_args.validate[0], app_args.classify[0])
+        sys.exit(1)
+    elif app_args.validate:
         validate_models(app_args.validate[0])
         sys.exit(1)
 

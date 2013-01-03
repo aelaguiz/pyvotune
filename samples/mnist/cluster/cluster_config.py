@@ -1,0 +1,43 @@
+import os
+
+CLUSTER='lark'
+CLUSTER_USER='ubuntu'
+#NODES=""
+#NODES="node001"
+NODES=43
+
+INSPYRED_GIT='https://github.com/aelaguiz/inspyred.git'
+PYVOTUNE_GIT='https://github.com/aelaguiz/pyvotune.git'
+
+USER='ubuntu'
+BASE_DIR='/home/' + USER
+PYVOTUNE_DIR=os.path.join(BASE_DIR, 'pyvotune/')
+SAMPLES_DIR=os.path.join(PYVOTUNE_DIR, 'samples/mnist/')
+
+MASTER_SETUP_SCRIPT='_setup_master.sh'
+MASTER_SETUP=os.path.join(SAMPLES_DIR, MASTER_SETUP_SCRIPT)
+
+MASTER_SETUP_ROOT_SCRIPT='_setup_master_root.sh'
+MASTER_SETUP_ROOT=os.path.join(SAMPLES_DIR, MASTER_SETUP_ROOT_SCRIPT)
+
+SETUP_SCRIPT='setup_cluster.sh'
+SETUP=os.path.join(SAMPLES_DIR, SETUP_SCRIPT)
+
+START_NODE_SCRIPT='_start_node.sh'
+START_NODE=os.path.join(SAMPLES_DIR, START_NODE_SCRIPT)
+
+START_MASTER_SCRIPT='_start_master.sh'
+START_MASTER=os.path.join(SAMPLES_DIR, START_MASTER_SCRIPT)
+
+VENV_SETUP_SCRIPT='_venv_setup.sh'
+VENV_SETUP=os.path.join(SAMPLES_DIR, VENV_SETUP_SCRIPT)
+
+NUM_SAMPLES=42000
+#NUM_SAMPLES=4000
+CROSSOVER_RATE=0.5
+MUTATION_RATE=0.3
+NEIGHBORHOOD_SIZE=2
+GRID_SIZE=30
+NUM_WORKERS=16
+EVAL_TIMEOUT=300
+MAX_LENGTH=5

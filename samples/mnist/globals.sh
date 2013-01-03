@@ -4,7 +4,7 @@ CLUSTER='lark'
 CLUSTER_USER='ubuntu'
 #NODES=""
 #NODES="node001"
-NODES="node001 node002 node003 node004 node005 node006 node007 node008 node009 node010 node011 node012 node013 node014"
+NODES="node001 node002 node003 node004 node005 node006 node007 node008 node009 node010 node011 node012 node013 node014 node015 node016 node017 node018 node019 node020 node021 node022 node023 node024 node025 node026 node027 node028 node029 node030 node031 node032 node033 node034 node035 node036 node037 node038 node039 node040 node041 node042 node043"
 
 INSPYRED_GIT=https://github.com/aelaguiz/inspyred.git
 PYVOTUNE_GIT=https://github.com/aelaguiz/pyvotune.git

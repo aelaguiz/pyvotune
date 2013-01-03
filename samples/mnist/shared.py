@@ -3,6 +3,7 @@
 import sys
 import inspyred
 import time
+import random
 
 import sklearn
 from sklearn.pipeline import Pipeline
@@ -70,6 +71,9 @@ def evaluator(candidate, args):
 
 
 def _evaluator(candidate, display=False):
+    global X
+    global y
+
     start_time = time.time()
 
     try:
@@ -135,10 +139,95 @@ def _evaluator(candidate, display=False):
 
 def validate_models(model_path):
     f = open(model_path, "rb")
-    models = pickle.load(f)
+    individuals = pickle.load(f)
     f.close()
 
-    for model in models:
-        log.info("Testing model: %s" % model.candidate)
+    return _validate_models(individuals)
 
-        _evaluator(model.candidate, display=False)
+
+def _validate_models(individuals):
+    res = []
+
+    for individual in individuals:
+        log.info("Testing individual: %s" % individual.candidate)
+
+        score = _evaluator(
+            individual.candidate, display=False)
+
+        res.append((score, individual))
+
+    return res
+
+
+def classify_models(model_path, out_path):
+    f = open(model_path, "rb")
+    individuals = pickle.load(f)
+    f.close()
+
+    last_indi = individuals[len(individuals) - 1]
+
+    pipeline = classify_indi(last_indi)
+
+    classify_test(last_indi, pipeline, out_path)
+
+
+def classify_indi(indi):
+    candidate = indi.candidate
+
+    if not candidate.assemble():
+        log.error("Candidate failed to assemble: %s" % candidate)
+        return
+
+    pipeline = Pipeline([
+        (str(i), s) for i, s in enumerate(candidate.assembled)])
+
+    log.debug("Training")
+    pipeline.fit(X, y)
+    observed_y = pipeline.predict(X)
+
+    f1 = sklearn.metrics.f1_score(y, observed_y)
+
+    log.info(
+        "Tested on itself\n%s" % sklearn.metrics.classification_report(y, observed_y))
+
+    return pipeline
+
+
+def classify_test(indi, pipeline, out_path):
+    log.debug("Loading testing data")
+    test_X, _ = load_mnist(None, with_y=False, path="data/mnist_test.csv")
+
+    log.debug("Predicting")
+    observed_y = pipeline.predict(test_X)
+
+    log.debug("Received %s predictions" % (observed_y.shape))
+
+    f = open(out_path, "w")
+    for y in observed_y:
+        f.write("%s\n" % y)
+    f.close()
+
+    log.debug("Done, saved into %s" % out_path)
+
+    for test_X, observed_y in random.sample(zip(test_X, observed_y), 100):
+        print "Guessed", observed_y, "for"
+
+        for row in chunks(test_X, 28):
+            rstr = ""
+            for col in row:
+                rstr += str(int(col)).center(4)
+
+            print rstr
+
+        print ""
+        print ""
+
+    log.debug(indi)
+
+
+def chunks(l, n):
+    """ Yield successive n-sized chunks from l.
+    """
+    for i in xrange(0, len(l), n):
+        yield l[i:i + n]
+
