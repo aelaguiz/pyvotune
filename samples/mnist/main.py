@@ -10,6 +10,7 @@ import sys
 import redis
 import time
 
+
 import multiprocessing
 from shared import load_dataset, generator, evaluator, _evaluator,\
     get_gene_pool, validate_models, classify_models
@@ -23,13 +24,17 @@ def get_args():
                                      formatter_class=
                                      argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('-r', '--redis-path', dest='redis_path', type=str,
-                        default=None, required=True,
-                        help="Path to the redis database")
+    parser.add_argument('-r', '--host', dest='host', type=str,
+                        default='localhost', required=False,
+                        help="Redis host")
 
-    parser.add_argument('-n', '--num-processes', dest='num_processes', type=int,
-                        default=None, required=True,
-                        help="Num of processes to start")
+    parser.add_argument('-p', '--port', dest='port', type=int,
+                        default=6379, required=False,
+                        help="Redis port")
+
+    parser.add_argument('-b', '--db', dest='db', type=int,
+                        default=0, required=False,
+                        help="Redis db")
 
     parser.add_argument('-g', '--grid_size', dest='grid_size', type=int,
                         default=None, required=True,
@@ -83,11 +88,6 @@ if __name__ == '__main__':
 
     pyvotune.set_debug(app_args.debug_mode)
 
-    nprocs = app_args.num_processes
-
-    con_str = app_args.redis_path
-    rng = random.Random()
-
     rng = random.Random()
     gene_pool = get_gene_pool(rng)
 
@@ -101,9 +101,6 @@ if __name__ == '__main__':
     elif app_args.validate:
         validate_models(app_args.validate[0])
         sys.exit(1)
-
-    # Start redis queue workers
-    pyvotune.evaluators.cea_rq_worker.start_workers(processes=nprocs, con_str=con_str)
 
     if not app_args.worker_mode:
         #################################
@@ -153,7 +150,9 @@ if __name__ == '__main__':
 
             async_evaluator=True,
 
-            rq_constr=con_str,
+            rq_host=app_args.host,
+            rq_port=app_args.port,
+            rq_db=app_args.db,
             rq_evaluator=evaluator,
             rq_timeout=app_args.eval_timeout,
             rq_timeout_fitness=0.,
@@ -182,5 +181,9 @@ if __name__ == '__main__':
         log.info("Fitness: %f" % fitness)
         log.info(best.candidate)
     else:
-        while True:
-            time.sleep(100000000)
+        import pysplash
+        pysplash.set_debug(app_args.debug_mode)
+
+        # Start redis queue workers
+        pyvotune.evaluators.cea_rq_worker.start_pool(
+            app_args.host, app_args.port, '', app_args.db)

@@ -11,6 +11,7 @@ log = logger()
 
 
 def rq_runner(candidates, args):
+    log.debug("Runner process called")
     timeout_val = args.setdefault('rq_timeout_fitness', 0)
 
     try:

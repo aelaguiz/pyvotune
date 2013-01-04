@@ -20,9 +20,13 @@ def get_queue(args):
         return __async_queue
 
     name = args.setdefault('rq_name', 'pyvotune')
-    con_str = args['rq_constr']
 
-    con = redis.from_url(con_str)
+    host = args.setdefault('rq_host', 'localhost')
+    port = args.setdefault('rq_port', 6379)
+    db = args.setdefault('rq_db', 0)
+    password = args.setdefault('rq_password', '')
+
+    con = redis.StrictRedis(host=host, port=port, db=db, password=password)
 
     __async_queue = Queue(name, connection=con)
 

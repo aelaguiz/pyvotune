@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from rq import Queue, Worker, Connection
 from multiprocessing import Process
 import redis
@@ -19,7 +21,15 @@ def _start_worker(con_str, queue):
         log.exception("Worker excepted %s" % e)
 
 
-def start_workers(processes, con_str, queue='pyvotune'):
-    for i in range(processes):
-        p = Process(target=_start_worker, args=(con_str, queue))
-        p.start()
+def start_pool(host, port, password, db, queue='pyvotune'):
+    import pysplash
+
+    log.debug("Starting pool with %s %s %s %s" % (
+        host, port, password, db))
+
+    pool = pysplash.Pool(
+        [queue], host=host, port=port, password=password,
+        db=db, max_cpu=120.)
+
+    log.debug("Starting pool")
+    pool.start()
