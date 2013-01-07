@@ -49,8 +49,8 @@ def get_gene_pool(rng):
     gene_pool = pyvotune.sklearn.get_classifiers(n_features, rng) +\
         pyvotune.sklearn.get_preprocessors(n_features, rng) + \
         pyvotune.sklearn.get_decomposers(n_features, rng) +\
-        pyvotune.sklearn.get_image_features(n_features, rng) +\
-        pyvotune.sklearn.get_pyrbm(n_features, rng)
+        pyvotune.sklearn.get_image_features(n_features, rng)
+        #pyvotune.sklearn.get_pyrbm(n_features, rng)
 
     return gene_pool
 
