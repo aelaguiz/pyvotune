@@ -82,8 +82,8 @@ class TheanoRBMFeatureExtractor(BaseEstimator, TransformerMixin):
     def train(self, train_x):
         n_train_batches = train_x.get_value(borrow=True).shape[0] / self.batch_size
 
-        #log.debug(
-            #u"Fitting RBM With {0} training batches".format(n_train_batches))
+        log.debug(
+            u"Fitting RBM With {0} training batches".format(n_train_batches))
 
         for epoch in xrange(self.training_epochs):
 
@@ -91,19 +91,19 @@ class TheanoRBMFeatureExtractor(BaseEstimator, TransformerMixin):
             mean_cost = []
             t_start = time.time()
 
-            #log.debug(u"RBM Training epoch {0}".format(epoch))
+            log.debug(u"RBM Training epoch {0}".format(epoch))
 
             for batch_index in xrange(n_train_batches):
                 t_batch_start = time.time()
                 mean_cost += [self.train_rbm(batch_index)]
                 t_batch_end = time.time()
 
-                #log.debug(u"Training batch {0} of {1} - took {2}s".format(
-                    #batch_index, n_train_batches, t_batch_end - t_batch_start))
+                log.debug(u"Training batch {0} of {1} - took {2}s".format(
+                    batch_index, n_train_batches, t_batch_end - t_batch_start))
 
             t_end = time.time()
-            #log.debug(u'Training epoch {0}, cost is {1} - took {2}s'.format(
-                #epoch, np.mean(mean_cost), t_end - t_start))
+            log.debug(u'Training epoch {0}, cost is {1} - took {2}s'.format(
+                epoch, np.mean(mean_cost), t_end - t_start))
 
     def transform(self, X, y=None):
         test_set_x, _ = dataset.shared_dataset(global_theano, global_T, X, borrow=True)
@@ -142,6 +142,7 @@ class TheanoRBMFeatureExtractor(BaseEstimator, TransformerMixin):
             all_vis_sample.append(vis_sample)
 
         hidden_mean_field = np.mean(all_hid_mfs, axis=0)
+        visible_mean_field = np.mean(all_vis_sample, axis=0)
 
         print "all_hid_mfs shape", np.shape(all_hid_mfs)
         print "Hidden mean field", np.shape(hidden_mean_field)
@@ -149,7 +150,8 @@ class TheanoRBMFeatureExtractor(BaseEstimator, TransformerMixin):
 
         #self.sample_all(X, all_hid_sample, all_vis_sample, ident)
 
-        return hidden_mean_field
+        #return hidden_mean_field
+        return visible_mean_field
 
     #def sample_all(self, X, all_hid_sample, all_vis_sample, ident):
         #width = np.shape(X)[1]

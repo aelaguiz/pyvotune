@@ -36,6 +36,8 @@ def load_dataset(num_samples):
     ############################
     X, y = load_mnist(num_samples)
 
+    return X, y
+
 
 def get_num_features():
     return X.shape[1]
