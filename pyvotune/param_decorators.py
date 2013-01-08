@@ -131,6 +131,11 @@ def add_param(cls, param):
     if not hasattr(cls, '_pyvotune_params'):
         cls._pyvotune_params = []
 
+    if param.name:
+        for cur_param in list(cls._pyvotune_params):
+            if cur_param.name == param.name:
+                cls._pyvotune_params.remove(cur_param)
+
     cls._pyvotune_params.append(param)
 
     return cls

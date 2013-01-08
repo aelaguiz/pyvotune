@@ -196,15 +196,19 @@ class Genome(list):
         strval = "Genome: %s\n" % self.genome_id
         strval += "  Parents = %s\n" % (self.parent_id)
 
-        for i, (gene, gene_params, gene_param_vals) in enumerate(grouped_genes):
-            if gene == NOOP_GENE:
-                strval += "\tGene %d: NOOP\n" % (i)
-                continue
+        if not grouped_genes:
+            strval += "INVALID GENOME"
+        else:
+            for i, (gene, gene_params, gene_param_vals) in enumerate(
+                    grouped_genes):
+                if gene == NOOP_GENE:
+                    strval += "\tGene %d: NOOP\n" % (i)
+                    continue
 
-            strval += "\tGene %d: %s\n" % (i, gene.__name__)
+                strval += "\tGene %d: %s\n" % (i, gene.__name__)
 
-            for j, (param, val) in enumerate(zip(gene_params, gene_param_vals)):
-                strval += "\t\tParam %d: %s - %s\n" % (j, param, val)
+                for j, (param, val) in enumerate(zip(gene_params, gene_param_vals)):
+                    strval += "\t\tParam %d: %s - %s\n" % (j, param, val)
 
         return strval
 

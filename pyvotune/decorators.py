@@ -61,7 +61,8 @@ def input(fn):
 
 def output(fn):
     """
-    Decorator labels a function as an output validator function
+    Decorator labels a function as an output validator
+    function
     """
     fn._pyvotune_output_fn = True
     return fn

@@ -38,14 +38,15 @@ class Generate:
             if genome:
                 return genome
 
-        log.error(u"Generate: Failed after {0} tries to generate a genome".format(
-            max_retries))
+        log.error(
+            u"Generate: Failed after {0} tries to generate a genome".format(
+                max_retries))
 
     def _generate(self):
         genome = Genome(get_id(), self.initial_state)
 
         for i in range(self.max_length):
-            gene = self.next_gene(genome)
+            gene = self.next_gene(i, genome)
 
             if not gene:
                 #log.debug(u"Generate: Failed, ran out of valid genes")
@@ -55,15 +56,23 @@ class Generate:
             genome.add_gene(params, gene)
 
         if genome.validate():
+            #log.debug("Got valid genome %s" % genome)
             return genome
 
         #log.debug(u"Generate: Failed, invalid genome generated")
 
-    def next_gene(self, genome):
-        if self.rng.random() < self.noop_frequency:
+    #def get_loader(self, genome):
+        #for gene in self.gene_pool:
+            #if genome.state.is_gene_loader(gene):
+                #print "Got loader", gene
+                #return gene
+
+    def next_gene(self, i, genome):
+        if i != 0 and self.rng.random() < self.noop_frequency:
             return NOOP_GENE
 
-        avail_genes = [gene for gene in self.gene_pool if genome.does_gene_fit(gene)]
+        avail_genes = [
+            gene for gene in self.gene_pool if genome.does_gene_fit(gene)]
 
         if not avail_genes:
             #log.debug(u"Generate: No available genes")

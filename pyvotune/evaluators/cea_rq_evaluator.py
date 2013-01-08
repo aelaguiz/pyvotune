@@ -48,7 +48,6 @@ def cell_evaluator_rq(individuals, callback_fn, args):
     """
     global __async_results
 
-    evaluator = get_evaluator(args)
     logger = args['_ec'].logger
     rq_timeout = args.setdefault('rq_timeout', 60)
 
@@ -58,6 +57,9 @@ def cell_evaluator_rq(individuals, callback_fn, args):
         pickled_args = get_args(args)
 
         for idx, ind in individuals:
+            #res = pyvotune.evaluators.cea_rq_runner.rq_runner([ind.candidate], args)
+            #ind.fitness = res
+            #callback_fn(idx, ind)
             job = queue.enqueue_call(
                 func=pyvotune.evaluators.cea_rq_runner.rq_runner,
                 args=( 
