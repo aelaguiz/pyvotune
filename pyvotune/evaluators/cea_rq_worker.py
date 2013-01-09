@@ -29,7 +29,10 @@ def start_pool(host, port, password, db, queue='pyvotune'):
 
     pool = pysplash.Pool(
         [queue], host=host, port=port, password=password,
-        db=db, max_cpu=120.)
+        db=db, max_cpu=120.,
+        max_per_scale=1,
+        scale_frequency=20,
+        min_procs=4)
 
     log.debug("Starting pool")
     pool.start()
