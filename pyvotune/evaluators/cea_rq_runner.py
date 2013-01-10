@@ -55,7 +55,6 @@ def rq_runner(candidates, args):
 
 
 def _child_runner(child_conn, candidates, args):
-    time.sleep(500000)
     try:
         evaluator = args['rq_evaluator']
 
