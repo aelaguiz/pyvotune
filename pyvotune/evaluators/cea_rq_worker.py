@@ -32,7 +32,8 @@ def start_pool(host, port, password, db, queue='pyvotune'):
         db=db, max_cpu=120.,
         max_per_scale=1,
         scale_frequency=20,
-        min_procs=4)
+        min_procs=1,
+        quiet_period_seconds=60)
 
     log.debug("Starting pool")
     pool.start()
