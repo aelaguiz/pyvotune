@@ -11,13 +11,12 @@ log = logger()
 
 
 def rq_runner(candidates, args):
-    log.debug("Runner process called")
     timeout_val = args.setdefault('rq_timeout_fitness', 0)
 
     try:
-        rq_timeout = args['rq_timeout']
-
         pickled_args = get_args(args)
+
+        rq_timeout = args['rq_timeout']
 
         parent_conn, child_conn = Pipe()
 
@@ -27,17 +26,19 @@ def rq_runner(candidates, args):
         try:
             proc.start()
 
+            log.debug("Waiting for child process for {0} seconds".format(
+                rq_timeout))
             res = parent_conn.poll(rq_timeout)
 
-            if res is None:
+            if res is False:
                 log.debug("Timed out waiting for child result")
-                proc.terminate()
 
-                raise
+                proc.terminate()
+                return timeout_val
 
             else:
                 data = parent_conn.recv()
-                #log.debug("Received from child {0}".format(data))
+                log.debug("Received from child {0}".format(data))
 
                 proc.join(rq_timeout)
 
@@ -54,6 +55,7 @@ def rq_runner(candidates, args):
 
 
 def _child_runner(child_conn, candidates, args):
+    time.sleep(500000)
     try:
         evaluator = args['rq_evaluator']
 

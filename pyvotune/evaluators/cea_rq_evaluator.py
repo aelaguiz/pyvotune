@@ -64,7 +64,7 @@ def cell_evaluator_rq(individuals, callback_fn, args):
                 func=pyvotune.evaluators.cea_rq_runner.rq_runner,
                 args=( 
                     [ind.candidate], pickled_args),
-                timeout=rq_timeout+2)
+                timeout=rq_timeout*3)
            
             #logger.debug("Dispatching {0} for evaluation".format(
                 #ind))
